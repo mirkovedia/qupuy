@@ -3,6 +3,8 @@ export type Modulo = {
   titulo: string;
   duracionSegundos: number;
   videoUrl: string;
+  /** Número de diapositivas de la clase. 0 si videoUrl es un archivo de video. */
+  diapositivas?: number;
   /** El módulo de vista previa, accesible sin membresía */
   esGratuito: boolean;
 };
