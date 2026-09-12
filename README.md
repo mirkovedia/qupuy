@@ -1,382 +1,304 @@
-# 🏗 Etherumbo — Hackathon web3 · Cochabamba, Bolivia
+# Qupuy
 
-> Repositorio del proyecto para la hackathon **Etherumbo**, construido sobre
-> Scaffold-ETH 2 (Hardhat + Next.js).
-> **Desarrollo asistido por IA.** Ahora mismo: solo Claude Code.
-> El sistema de contexto soporta Codex en paralelo si se suma más adelante.
->
-> **Si eres una IA: lee [`CONTEXT.md`](CONTEXT.md) antes que nada, luego [`AGENTS.md`](AGENTS.md).**
+**Cursos con acceso transferible, sobre Unlock Protocol.**
 
-| | |
-| --- | --- |
-| **Evento** | Etherumbo — Cochabamba, Bolivia |
-| **Fecha** | **2026-09-11 — EN CURSO** · 48 horas · cierre 2026-09-13 |
-| **Tracks** | ⚠️ pendientes de recibir — tema general: web3 |
-| **Participación** | Individual (dev + Claude Code) |
-| **Plataforma** | Devfolio — aplica su Code of Conduct (ver [`CONTEXT.md`](CONTEXT.md) §2) |
-| **Stack** | Next.js (App Router) · React · TypeScript · Wagmi · Viem · RainbowKit · Tailwind + DaisyUI |
-| **Contratos** | Solidity + Hardhat (`hardhat-deploy`) |
-| **Monorepo** | Yarn 4 workspaces — `packages/hardhat`, `packages/nextjs` |
-| **Node** | >= 22.10.0 |
-| **Fase** | 🔴 **HACKATHON EN CURSO** — fase 0, esperando tracks |
+> **Qupuy** (quechua): *dar a otro, entregar* — y también *pagar*.
+> Una sola palabra para las dos acciones centrales del producto.
+
+Portal de cursos donde el acceso es una membresía de Unlock que el alumno
+**posee** y puede pasarle a otra persona. Como se presta un libro.
+
+**ETH Bolivia Buildathon 2026 · Cochabamba** — Track de Unlock Protocol,
+Bounty 2: Portal de Contenido Token-Gated.
 
 ---
 
-## 🔴 Reloj corriendo — 48 horas
+## El problema
 
-La hackathon arrancó el **2026-09-11** y dura **48 horas**. Los tracks aún no se
-anuncian, así que el proyecto sigue sin definir.
+En Bolivia, un creador no tiene forma de cobrar por internet.
 
-### El presupuesto real no son 48 horas
+No es una exageración. Es un hecho verificable: **Bolivia es el único país de
+Latinoamérica sin PayPal**, y MercadoPago opera en toda la región salvo Ecuador,
+Bolivia y Venezuela.
 
-Descontando descanso, comidas y la preparación de la demo, quedan unas
-**30-32 horas productivas**. Planificar sobre 48 es la forma más común de no
-terminar. El plan de fases completo está en [`CONTEXT.md`](CONTEXT.md) §4:
+Un profesor de inglés en Cochabamba que graba su curso se topa con esto:
 
-| Fase | Horas | Qué pasa |
-| ---- | ----- | -------- |
-| 0 — Hora cero | 0-2 | Checklist, `git init`, deploy de prueba a testnet |
-| 1 — Decisión | 2-4 | Salen los tracks → elegir y definir scope (máx. 2h) |
-| 2 — Contratos | 4-14 | Solidity + tests + deploy local |
-| 3 — Frontend P0 | 14-26 | 🎯 Flujo completo funcionando, aunque sea feo |
-| 4 — Testnet | 26-32 | Deploy + verificación + frontend publicado |
-| 5 — P1 y pulido | 32-42 | Solo si P0 está cerrado |
-| 6 — Demo | 42-48 | 🔴 Intocable. Guión y ensayo, nada de código |
+| Plataforma | Por qué no puede usarla |
+| ---------- | ----------------------- |
+| Udemy | Paga por PayPal — no existe en el país |
+| Hotmart | Exige cuenta bancaria que reciba dólares |
+| Teachable | Usa Stripe — no opera en Bolivia |
 
-**Cortes duros:** hora 26 sin P0 funcionando → recortar ya. Hora 32 → congelar
-funcionalidades. Hora 42 → congelar código.
+Su única salida real es vender por WhatsApp, cobrar por QR y enviar un enlace de
+Drive. Tres días después ese enlace circula en cinco grupos: vendió veinte
+accesos y lo ven doscientas personas.
 
-### Ahora mismo (fase 0)
-
-1. **Ejecutar el checklist de [`CONTEXT.md`](CONTEXT.md) §8.** Es lo único
-   productivo hasta que salgan los tracks, y evita descubrir un entorno roto
-   en la hora 20.
-2. `git init` + primer commit.
-3. Revisar las reglas de reutilización de código ([`CONTEXT.md`](CONTEXT.md) §2)
-   y la plantilla de declaración para el submission (§10).
-
-### Cuando anuncien los tracks
-
-1. Elegir track → registrar la decisión en [`CONTEXT.md`](CONTEXT.md) §6.
-2. Consultar el [mapa skill → tipo de proyecto](#-mapa-skill--tipo-de-proyecto) de abajo.
-3. Definir scope **con cortes** en [`CONTEXT.md`](CONTEXT.md) §5 — antes de escribir código.
-4. Leer la skill correspondiente, y recién ahí implementar.
+**El problema no es que falte blockchain. Es que no tiene forma de cobrar por un
+acceso, y de que ese acceso signifique algo.**
 
 ---
 
-## 🗺 Mapa skill → tipo de proyecto
+## La solución
 
-Las 8 skills del repo cubren buena parte de los tracks típicos de una hackathon
-web3. Esta tabla existe para decidir rápido: cuando salga el track, buscas la
-fila y ya sabes qué leer.
+Unlock Protocol resuelve el cobro. Y sus membresías tienen una propiedad que
+ninguna plataforma web2 puede ofrecer: **son objetos que el usuario posee**.
 
-| Si el track va de… | Skill | Qué te resuelve | Arranque |
-| --- | --- | --- | --- |
-| **NFTs, coleccionables, arte, ticketing, credenciales** | `erc-721` | Colección completa: minteo, galería, transferencias. Cubre reentrancy en `_safeMint`, SVG on-chain, metadata de marketplaces | 🟢 Rápido |
-| **Identidad, login, reputación, comunidad** | `siwe` | Login con wallet (EIP-4361) y sesiones. Usa `viem/siwe` nativo | 🟢 Rápido |
-| **Tokens, DeFi, gobernanza, staking** | `openzeppelin` | ERC20/721/1155, Ownable, AccessControl, Pausable, ReentrancyGuard — con patrones leídos del código instalado | 🟢 Rápido |
-| **UX de wallet, onboarding, abstracción de cuenta** | `eip-5792` | Transacciones batch, `wallet_sendCalls`, paymasters (gas patrocinado), ERC-7677 | 🟡 Medio |
-| **Pagos, micropagos, monetizar APIs** | `x402` | Rutas con HTTP 402 y pago en stablecoins vía middleware de Next.js | 🟡 Medio |
-| **Datos on-chain, analítica, dashboards** | `ponder` | Indexa eventos y los sirve por GraphQL. Lee los contratos desplegados de SE-2 automáticamente | ⛔ No con 48h |
-| **Datos on-chain (alternativa descentralizada)** | `subgraph` | The Graph: subgraph local con Docker o deploy a Subgraph Studio | ⛔ No con 48h |
-| **Cualquier cosa con datos off-chain** | `drizzle-neon` | PostgreSQL con Drizzle ORM + Neon serverless. Perfil de usuario, caché, contenido | 🟡 Medio |
+Qupuy construye sobre esa propiedad.
 
-**Cómo leer la columna de arranque, con 48 horas:**
+### El flujo
 
-- 🟢 **Rápido** — la skill trae el patrón completo, sin infraestructura nueva. **Elige de aquí.**
-- 🟡 **Medio** — dependencias nuevas o configuración, sin servicios aparte. Viable como complemento de un 🟢.
-- ⛔ **No recomendado con 48h** — `ponder` y `subgraph` exigen Docker y un workspace
-  nuevo: entre 4 y 6 horas antes de ver el primer dato. No las recuperas.
+```
+Descubrir → Previsualizar → Verificar membresía → Desbloquear → Contenido completo
+```
 
-> **Si el track pide datos on-chain**, usa `useScaffoldEventHistory` — ya viene en
-> SE-2, lee el historial de eventos sin infraestructura y cubre el 80% del caso.
-> Un indexador solo se justifica si el track lo exige explícitamente.
+El visitante recorre el catálogo, ve el primer módulo de cualquier curso gratis,
+y el resto con candado. Al comprar la membresía, el contenido completo aparece
+sin recargar la página.
 
-> **Combinar es lo normal**, pero con 48h el límite realista son **dos skills**:
-> una 🟢 de base y como mucho una 🟡. Por ejemplo `openzeppelin` + `erc-721`
-> para NFTs, o `openzeppelin` + `siwe` para identidad con login.
+### El diferenciador: el curso que se presta
 
-### Lo que SE-2 ya te da gratis
+Toda plataforma de cursos pelea contra que la gente comparta accesos. Qupuy lo
+convierte en una característica.
 
-No lo reconstruyas — ya está y funciona:
+Como la membresía es un NFT ERC-721, **solo una persona la tiene a la vez**. Al
+terminar un curso, el alumno puede pasárselo a alguien:
 
-- **Burner wallet y faucet local** — probar sin MetaMask ni fondos reales.
-- **Página `/debug`** — interactuar con cualquier función del contrato sin escribir UI.
-- **Block explorer local** en `/blockexplorer`.
-- **Hot reload de contratos** — el frontend se adapta solo al editar el contrato.
-- **Componentes web3** — `Address`, `AddressInput`, `Balance`, `EtherInput` con ENS y conversión USD resueltos.
+- Alguien termina el curso de inglés y se lo pasa a su hermana.
+- Un instituto compra diez accesos y los rota entre generaciones de alumnos.
+- Alguien compró un curso y nunca lo usó: lo pasa en vez de perderlo.
 
-En una demo, `/debug` te salva: si la UI de una función no llegó a tiempo, la enseñas ahí.
+En Bolivia los libros de texto se heredan entre hermanos. Esto es lo mismo,
+digital — y es imposible de hacer en Udemy, donde "prestar" un curso significaría
+entregar tu cuenta entera.
 
 ---
 
-## 🤖 Cómo funciona el contexto entre Claude Code y Codex
+## La integración con Unlock
 
-El problema: dos IAs sobre el mismo repositorio en sesiones separadas no
-comparten memoria. Cada una arranca en frío. La solución son **cuatro archivos
-con responsabilidades distintas** — ninguno duplica al otro.
+### Arquitectura
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  CONTEXT.md          ← estado MUTABLE. Cambia cada sesión.      │
-│  track, scope, decisiones, qué está a medias, handoff.          │
-│  Lo leen TODAS las IAs al arrancar. Lo actualizan al terminar.  │
-├─────────────────────────────────────────────────────────────────┤
-│  AGENTS.md           ← reglas ESTABLES. Cambia rara vez.        │
-│  comandos, arquitectura, convenciones, índice de skills,        │
-│  protocolo multi-IA.                                            │
-│  Lo leen Codex · Cursor · OpenCode (convención `AGENTS.md`).    │
-├─────────────────────────────────────────────────────────────────┤
-│  CLAUDE.md           ← solo hace `@AGENTS.md`. NO duplicar.     │
-│  Claude Code lee este, que importa el anterior.                 │
-├─────────────────────────────────────────────────────────────────┤
-│  README.md (aquí)    ← onboarding humano + este mapa.           │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### La regla de oro
-
-> **El código dice _qué_ existe. `CONTEXT.md` dice _por qué_, _qué falta_ y _quién lo tocó último_.**
-
-Un diff de git no explica por qué se descartó una alternativa, ni qué quedó a
-medias, ni qué no hay que tocar. Eso vive en `CONTEXT.md`.
-
-### Protocolo de relevo (obligatorio para ambas IAs)
-
-**Al empezar cualquier sesión:**
-
-1. Leer [`CONTEXT.md`](CONTEXT.md) — sobre todo §7 *Handoff*, el mensaje de la IA
-   anterior, y §4 *Plan de las 48 horas* para saber en qué fase estás.
-2. Leer [`AGENTS.md`](AGENTS.md) si es la primera sesión o si cambió.
-3. Si la tarea coincide con una skill, **leerla antes de escribir código**.
-
-**Al terminar cualquier sesión:**
-
-1. Sobrescribir §7 *Handoff* — qué hice / qué dejé a medias / qué sigue / qué NO tocar.
-2. Decisión no evidente en el código → fila nueva en §6 *Decisiones*.
-   **Nunca borrar filas**; marcar `[REVERTIDA]` con el motivo si se deshace.
-3. Cambió el estado → actualizar §3 *Estado actual*.
-4. Término de dominio nuevo → registrarlo en §9 *Glosario*.
-
-**Frase para arrancar una sesión, en cualquiera de las dos IAs:**
+Qupuy **no despliega contratos propios**. El `PublicLock` de Unlock ya es un
+ERC-721 completo con todo lo necesario, y el proyecto se apoya en él tal cual.
 
 ```
-Lee CONTEXT.md y AGENTS.md antes de empezar. Luego: <tu tarea>.
+┌─────────────────────────────────────────────────────┐
+│  Presentación (App Router)                          │
+│  app/page.tsx · app/curso/[slug]                    │
+├─────────────────────────────────────────────────────┤
+│  Componentes de dominio                             │
+│  components/cursos/*                                │
+├─────────────────────────────────────────────────────┤
+│  Capa de acceso — lo único que conoce Unlock        │
+│  hooks/useMembresia · hooks/useComprarAcceso        │
+├─────────────────────────────────────────────────────┤
+│  Datos (abstraídos)        │  Onchain               │
+│  services/content/*        │  contracts/unlock/*    │
+└─────────────────────────────────────────────────────┘
+                                     ↓
+                        Lock de Unlock (Sepolia)
 ```
 
-**Frase para cerrarla:**
+**Regla de fronteras:** ningún componente de presentación llama a un contrato
+directamente. Todo pasa por la capa de acceso.
 
-```
-Actualiza el handoff en CONTEXT.md con lo que hiciste.
+### Funciones del PublicLock que usa el proyecto
+
+| Función | Para qué | Dónde |
+| ------- | -------- | ----- |
+| `getHasValidKey(address)` | **Determinar el acceso** | `hooks/useMembresia.ts` |
+| `balanceOf(address)` | Saber si posee alguna membresía (para obtener su tokenId) | `hooks/useMembresia.ts` |
+| `tokenOfOwnerByIndex(address, 0)` | Obtener el tokenId del usuario | `hooks/useMembresia.ts` |
+| `keyExpirationTimestampFor(tokenId)` | Días restantes | `hooks/useMembresia.ts` |
+| `keyPrice()` | Precio de la membresía | `hooks/useComprarAcceso.ts` |
+| `purchase(...)` | Comprar la membresía | `hooks/useComprarAcceso.ts` |
+| `transferFrom(from, to, tokenId)` | Pasar el acceso a otra persona | `hooks/useTransferirAcceso.ts` _(en desarrollo)_ |
+
+### La decisión técnica central: `getHasValidKey`, nunca `balanceOf`
+
+```typescript
+// hooks/useMembresia.ts
+const { data: tieneKeyValida } = useReadContract({
+  address: lockAddress,
+  abi: PUBLIC_LOCK_ABI,
+  functionName: "getHasValidKey",   // ← comprueba la expiración dentro del contrato
+  args: [address],
+});
 ```
 
-> **Durante la hackathon esto importa más que nunca.** Bajo presión de tiempo,
-> el error caro es que una IA rehaga o rompa lo que la otra acaba de dejar
-> funcionando. La sección "qué NO tocar" del handoff es la que lo previene.
+`balanceOf` devuelve 1 aunque la membresía esté vencida, porque el NFT permanece
+en la wallet tras expirar. Solo `getHasValidKey` comprueba la validez temporal.
+
+El proyecto usa `balanceOf` únicamente para averiguar si el usuario posee alguna
+membresía y así poder consultar su `tokenId`. **Nunca para decidir el acceso.**
+
+### El gating es real, no cosmético
+
+```typescript
+// app/curso/[slug]/VistaCurso.tsx
+const moduloReproducible = tieneAcceso ? moduloActivo : moduloGratuito;
+```
+
+Cuando el visitante no tiene membresía, **las URLs de los módulos de pago nunca
+llegan al navegador**. No se renderizan ni se ocultan con CSS: sencillamente no
+existen en la página.
+
+La expresión se recalcula en cada render, lo que la hace correcta también en el
+caso difícil: si un usuario con acceso selecciona el módulo 3 y luego transfiere
+su membresía, la vista vuelve al módulo gratuito de inmediato.
+
+### Registro de Locks por red
+
+Las direcciones no están escritas en el código:
+
+```typescript
+// contracts/unlock/locks.ts
+export const LOCKS_POR_RED: Record<number, Record<string, Address>> = {
+  [sepolia.id]: {
+    "ingles-basico": leerLock(process.env.NEXT_PUBLIC_LOCK_INGLES),
+    // …
+  },
+};
+```
+
+Desplegar en otra red — Base, Avalanche C-Chain — es añadir una entrada, no
+reescribir la aplicación.
 
 ---
 
-## 🧠 Skills y agentes
+## Locks desplegados
 
-Las skills son guías de implementación con patrones verificados y APIs
-actualizadas. **Léelas antes de implementar** — evitan que la IA invente APIs
-desde conocimiento pre-entrenado que puede estar desactualizado.
+| Curso | Red | Dirección del Lock |
+| ----- | --- | ------------------ |
+| Inglés desde cero | Sepolia (11155111) | _pendiente de desplegar_ |
+| Excel para tu negocio | Sepolia (11155111) | _pendiente de desplegar_ |
+| Reparación de celulares | Sepolia (11155111) | _pendiente de desplegar_ |
 
-### Dónde vive cada cosa
-
-| Ruta | Contenido | Editar aquí |
-| ---- | --------- | ----------- |
-| `.agents/skills/<name>/SKILL.md` | **Contenido real de las skills** | ✅ Sí |
-| `.agents/agents/<name>.md` | **Contenido real de los agentes** | ✅ Sí |
-| `.claude/skills/<name>/SKILL.md` | Wrapper → `@.agents/skills/...` | ❌ Solo frontmatter |
-| `.claude/agents/<name>.md` | Wrapper con `tools:` y `color:` | ❌ Solo frontmatter |
-| `.cursor/agents/`, `.opencode/agents/` | Wrappers por harness | ❌ Solo frontmatter |
-
-> **Una sola fuente de verdad.** Si editas una skill o un agente, edítalo en
-> `.agents/`. Los wrappers lo importan con `@` y se actualizan solos.
-
-**Cómo invocarlas:**
-
-- **Claude Code** → auto-descubiertas vía `.claude/skills/`. También `/openzeppelin`, `/siwe`, etc.
-- **Codex / Cursor / OpenCode** → `lee .agents/skills/<name>/SKILL.md antes de implementar`.
-
-### Agentes
-
-| Agente | Para qué |
-| ------ | -------- |
-| **grumpy-carlos-code-reviewer** | Code review exigente de TypeScript, React, Next.js y Solidity con las convenciones de SE-2. Invocarlo **después** de escribir o modificar código |
-
-> En hackathon, úsalo sobre los contratos antes de desplegar a testnet. Un bug
-> de seguridad en Solidity descubierto por el jurado cuesta más que los 5 minutos
-> que tarda la revisión.
-
-### MCP — documentación actualizada
-
-**Context7** está configurado en los tres harnesses (`.mcp.json`, `.cursor/mcp.json`,
-`opencode.json`). Sirve documentación al día de Wagmi, Viem, RainbowKit, DaisyUI,
-Hardhat, Next.js y demás.
-
-> Úsalo en lugar de responder de memoria cuando la pregunta sea sobre la API de
-> una librería. El conocimiento pre-entrenado envejece; Context7 no.
+Contrato Unlock en Sepolia: [`0x36b34e10295cCE69B652eEB5a8046041074515Da`](https://sepolia.etherscan.io/address/0x36b34e10295cCE69B652eEB5a8046041074515Da)
 
 ---
 
-## 🚀 Arranque rápido
+## Ejecutarlo localmente
 
-Requisitos: [Node >= 22.10.0](https://nodejs.org/en/download/), [Yarn](https://yarnpkg.com/getting-started/install), [Git](https://git-scm.com/downloads).
+Requisitos: Node >= 22.10.0, Yarn, Git.
 
 ```bash
+git clone https://github.com/mirkovedia/qupuy.git
+cd qupuy
 yarn install
 ```
 
-Después, **tres terminales**:
+Copia `packages/nextjs/.env.example` a `packages/nextjs/.env.local` y rellena las
+direcciones de los Locks:
+
+```
+NEXT_PUBLIC_LOCK_INGLES=0x…
+NEXT_PUBLIC_LOCK_EXCEL=0x…
+NEXT_PUBLIC_LOCK_CELULARES=0x…
+```
 
 ```bash
-yarn chain      # terminal 1 — blockchain local (Hardhat Network)
-yarn deploy     # terminal 2 — despliega los contratos al chain local
-yarn start      # terminal 3 — frontend en http://localhost:3000
+yarn start
 ```
 
-El frontend queda en `http://localhost:3000`. La página `/debug` te deja
-interactuar con los contratos desplegados sin escribir UI.
+La aplicación queda en `http://localhost:3000`. Necesitas una wallet con ETH de
+Sepolia ([faucet de prueba de trabajo](https://sepolia-faucet.pk910.de/)).
 
-### Comandos frecuentes
+### Comandos
 
 ```bash
-# Desarrollo
-yarn chain                      # blockchain local
-yarn deploy                     # despliega al chain local
-yarn deploy --tags MiContrato   # despliega solo un contrato (por su tag)
-yarn start                      # frontend en dev
-
-# Calidad
-yarn lint                       # lint de ambos packages
-yarn format                     # formatea ambos packages
-yarn test                       # tests de contratos (Hardhat)
-yarn compile                    # compila Solidity
-
-# Cuentas
-yarn generate                   # genera cuenta deployer nueva
-yarn account:import             # importa una private key existente
-yarn account                    # info de la cuenta actual
-
-# Redes reales
-yarn deploy --network sepolia   # despliega a testnet/mainnet
-yarn verify --network sepolia   # verifica contratos en el explorer
-yarn vercel:yolo --prod         # despliega el frontend
+yarn start          # servidor de desarrollo
+yarn test           # tests de lógica (15)
+yarn next:build     # build de producción
+yarn lint           # lint
 ```
 
 ---
 
-## 📁 Estructura
+## Stack
 
-```
-stack-a-scaffold-eth2/
-├── CONTEXT.md                  ← 🔴 bitácora compartida entre IAs — LEER PRIMERO
-├── AGENTS.md                   ← 🔴 reglas del repo (Codex/Cursor/OpenCode)
-├── CLAUDE.md                   ←    importa AGENTS.md (Claude Code)
-├── README.md                   ←    este archivo
-├── README.scaffold-eth.md      ←    README original de SE-2 (referencia upstream)
-│
-├── .agents/                    ← ✅ FUENTE DE VERDAD de skills y agentes
-│   ├── skills/                 ←    8 skills (openzeppelin, erc-721, siwe, …)
-│   └── agents/                 ←    grumpy-carlos-code-reviewer
-├── .claude/                    ←    wrappers para Claude Code
-├── .cursor/  .opencode/        ←    wrappers para Cursor y OpenCode
-├── .mcp.json                   ←    Context7 MCP
-│
-└── packages/
-    ├── hardhat/
-    │   ├── contracts/          ← 📝 tus contratos Solidity
-    │   ├── deploy/             ← 📝 scripts de deploy (hardhat-deploy, snake_case)
-    │   ├── test/               ← 📝 tests de contratos
-    │   └── hardhat.config.ts   ←    redes y configuración
-    └── nextjs/
-        ├── app/                ← 📝 páginas (App Router)
-        ├── components/         ← 📝 tus componentes
-        ├── hooks/scaffold-eth/ ← ⛔ core de SE-2 — no editar
-        ├── contracts/
-        │   ├── deployedContracts.ts   ← ⛔ AUTOGENERADO por `yarn deploy`
-        │   └── externalContracts.ts   ← 📝 contratos externos, a mano
-        └── scaffold.config.ts  ←    red objetivo, polling, API keys
-```
-
-Leyenda: 📝 escribe aquí · ⛔ no tocar · ✅ fuente de verdad
+| | |
+| --- | --- |
+| Frontend | Next.js 16 (App Router) · React 19 · TypeScript |
+| Web3 | wagmi 2.19 · viem 2.53 · RainbowKit |
+| Estilos | Tailwind 4 · DaisyUI 5 |
+| Base | Scaffold-ETH 2 |
+| Tests | Vitest (lógica pura) |
 
 ---
 
-## ⚙️ Convenciones que ambas IAs deben respetar
+## Decisiones de diseño
 
-Detalle completo en [`AGENTS.md`](AGENTS.md). Resumen de lo que más se incumple:
+**Sin contratos propios.** El bounty evalúa la integración con Unlock, no el
+volumen de Solidity escrito. Un contrato propio habría añadido superficie de
+bugs, tests y despliegue sin sumar nada — el `PublicLock` ya expone todo lo
+necesario. El tiempo liberado fue al frontend.
 
-### Hooks de contratos — usar siempre los de SE-2
+**La capa de datos está abstraída.** El contenido de los cursos vive hoy en un
+archivo tipado, pero tras una interfaz `ContentRepository`. Migrar a una base de
+datos es reemplazar una implementación, no reescribir la aplicación.
 
-```tsx
-// ✅ correcto
-const { data } = useScaffoldReadContract({ contractName: "YourContract", functionName: "greeting" });
-const { writeContractAsync } = useScaffoldWriteContract({ contractName: "YourContract" });
+**La interfaz nunca dice "NFT" ni "Key".** Dice "tu acceso vence en 28 días". El
+usuario final de Qupuy es un profesor boliviano o su alumno; la tecnología está
+debajo, no delante.
 
-// ❌ nombres que NO existen (error común de las IAs)
-useScaffoldContractRead   //  → useScaffoldReadContract
-useScaffoldContractWrite  //  → useScaffoldWriteContract
-```
-
-Disponibles: `useScaffoldReadContract`, `useScaffoldWriteContract`,
-`useScaffoldEventHistory`, `useScaffoldWatchContractEvent`,
-`useDeployedContractInfo`, `useScaffoldContract`, `useTransactor`.
-
-### Componentes web3 — importar de `@scaffold-ui/components`
-
-```tsx
-// ✅ correcto
-import { Address, AddressInput, Balance, EtherInput } from "@scaffold-ui/components";
-
-// ❌ patrón viejo
-import { Address } from "~~/components/scaffold-eth";
-```
-
-Nunca construyas un display de address, un input de address ni un input de ETH
-a mano — ya existen y resuelven ENS, avatares y conversión USD.
-
-### Estilos — DaisyUI antes que Tailwind crudo
-
-```tsx
-<button className="btn btn-primary">Conectar</button>
-```
-
-Usa colores semánticos de DaisyUI (`bg-base-100`, `text-base-content`,
-`btn-error`) en lugar de colores crudos de Tailwind — así el tema oscuro
-funciona solo.
-
-### TypeScript
-
-- `type` antes que `interface`.
-- Sin prefijo `T` en los tipos: `Address`, no `TAddress`.
-- Alias `~~` para el package nextjs: `import { useTargetNetwork } from "~~/hooks/scaffold-eth";`
-- Nada de `any`.
-
-### Solidity
-
-- `custom errors` en vez de strings en `require` (más barato en gas).
-- `external` antes que `public` cuando la función no se llama internamente.
-- Patrón CEI (Checks-Effects-Interactions) en llamadas externas.
-- Eventos en todo cambio de estado relevante.
-- Sin loops sin cota.
-
-### Nomenclatura
-
-| Estilo | Dónde |
-| ------ | ----- |
-| `UpperCamelCase` | clases, tipos, enums, componentes React |
-| `lowerCamelCase` | variables, parámetros, funciones, propiedades |
-| `CONSTANT_CASE` | constantes y globales |
-| `snake_case` | archivos de `packages/hardhat/deploy/` |
+**Los tests cubren la lógica pura, no la UI.** Quince tests sobre el cálculo de
+expiración, la resolución de Locks y el repositorio de contenido — donde los
+bugs son silenciosos. La interfaz se verifica manualmente contra una lista de
+escenarios documentada.
 
 ---
 
-## 🔗 Referencias
+## Limitación conocida
 
-- [Documentación de Scaffold-ETH 2](https://docs.scaffoldeth.io)
-- [README original de SE-2](README.scaffold-eth.md) — quickstart upstream
-- [Wagmi](https://wagmi.sh/) · [Viem](https://viem.sh/) · [DaisyUI](https://daisyui.com/components) · [RainbowKit](https://rainbowkit.com/)
-- [CONTRIBUTING.md](CONTRIBUTING.md) — guía de contribución de SE-2 upstream
+Con contenido servido estáticamente, las URLs de los videos son descubribles
+mediante las herramientas de desarrollo del navegador. Es aceptable y habitual
+en una demo; la ruta de producción son URLs firmadas con expiración corta,
+emitidas por un endpoint que valida la membresía del lado del servidor antes de
+entregarlas.
+
+Se documenta aquí porque un jurado técnico lo notaría, y ocultarlo sería peor
+que reconocerlo.
+
+---
+
+## Código preexistente
+
+Conforme al Código de Conducta de Devfolio, se declara el código que no se
+escribió durante la hackathon.
+
+**Preexistente:**
+
+- **Scaffold-ETH 2** (MIT) — estructura del monorepo, configuración de Hardhat y
+  Next.js, hooks de interacción con contratos, componentes web3 (`Address`,
+  `AddressInput`, `Balance`, `EtherInput`), páginas `/debug` y `/blockexplorer`,
+  burner wallet y faucet local.
+- **Guías de patrones** incluidas en el repositorio base (`.agents/skills/`),
+  usadas como referencia de implementación.
+- Dependencias estándar: wagmi, viem, RainbowKit, DaisyUI, Vitest.
+
+**Escrito durante la hackathon:**
+
+```
+packages/nextjs/
+├── app/curso/[slug]/page.tsx          ├── hooks/useMembresia.ts
+├── app/curso/[slug]/VistaCurso.tsx    ├── hooks/useComprarAcceso.ts
+├── app/page.tsx  (reescrito)          ├── services/content/types.ts
+├── components/cursos/BotonDesbloquear.tsx  ├── services/content/staticRepository.ts
+├── components/cursos/CursoCard.tsx    ├── services/content/index.ts
+├── components/cursos/EstadoMembresia.tsx   ├── contracts/unlock/publicLockAbi.ts
+├── components/cursos/ListaModulos.tsx ├── contracts/unlock/locks.ts
+├── components/cursos/ReproductorVideo.tsx  ├── utils/membresia.ts
+├── data/cursos.ts                     └── types/curso.ts
+```
+
+Más sus tests. Toda la lógica de negocio, el diseño del sistema y la interfaz
+son originales. No se ha reutilizado código de proyectos previos del autor ni de
+submissions a otras hackathons.
+
+---
+
+## Enlaces
+
+- [Unlock Protocol](https://unlock-protocol.com/) · [documentación](https://docs.unlock-protocol.com/)
+- [Scaffold-ETH 2](https://docs.scaffoldeth.io)
+- [Sistema de contexto del proyecto](docs/CONTEXTO-IA.md) — cómo se desarrolló con asistencia de IA
