@@ -33,8 +33,8 @@ export const BotonDesbloquear = ({ curso, lockAddress, onCompraExitosa }: Props)
   }
 
   const manejarCompra = async () => {
-    await comprar();
-    onCompraExitosa();
+    const exitosa = await comprar();
+    if (exitosa) onCompraExitosa();
   };
 
   return (

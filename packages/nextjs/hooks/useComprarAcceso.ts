@@ -26,10 +26,15 @@ export const useComprarAcceso = (lockAddress: Address | undefined) => {
     query: { enabled: Boolean(lockAddress) },
   });
 
-  const comprar = async (): Promise<void> => {
+  const comprar = async (): Promise<boolean> => {
     if (!lockAddress || !address || precio === undefined) {
       notification.error("Conecta tu wallet para comprar el acceso");
-      return;
+      return false;
+    }
+
+    if (!publicClient) {
+      notification.error("No se pudo confirmar la transacción. Revisa tu conexión.");
+      return false;
     }
 
     setIsPending(true);
@@ -42,10 +47,12 @@ export const useComprarAcceso = (lockAddress: Address | undefined) => {
         value: precio,
       });
 
-      await publicClient?.waitForTransactionReceipt({ hash });
+      await publicClient.waitForTransactionReceipt({ hash });
       notification.success("¡Listo! Ya tienes acceso al curso");
+      return true;
     } catch (error) {
       notification.error(getParsedError(error));
+      return false;
     } finally {
       setIsPending(false);
     }
