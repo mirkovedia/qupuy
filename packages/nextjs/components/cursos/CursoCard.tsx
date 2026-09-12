@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const CursoCard = ({ curso }: Props) => {
-  const { estado, diasRestantes } = useMembresia(curso.lockKey);
+  const { estado, diasRestantes, isLoading } = useMembresia(curso.lockKey);
 
   return (
     <Link href={`/curso/${curso.slug}`} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
@@ -26,7 +26,11 @@ export const CursoCard = ({ curso }: Props) => {
         <p className="text-sm line-clamp-2">{curso.descripcion}</p>
         <div className="card-actions justify-between items-center mt-2">
           <span className="font-bold text-lg">Bs {curso.precioBs}</span>
-          <EstadoMembresia estado={estado} diasRestantes={diasRestantes} />
+          {isLoading ? (
+            <div className="skeleton h-5 w-24" />
+          ) : (
+            <EstadoMembresia estado={estado} diasRestantes={diasRestantes} />
+          )}
         </div>
       </div>
     </Link>
