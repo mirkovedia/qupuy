@@ -1,0 +1,6 @@
+---
+name: erc-721
+description: "Add an ERC-721 NFT contract to a Scaffold-ETH 2 project. Use when the user wants to: create an NFT collection, deploy an ERC-721, add NFT minting, build an NFT gallery or transfer UI, or work with non-fungible tokens in SE-2."
+---
+
+@.agents/skills/erc-721/SKILL.md
