@@ -40,7 +40,11 @@ export const useMembresia = (lockKey: string): Membresia => {
     query: { enabled: habilitado },
   });
 
-  const { data: balance, refetch: refetchBalance } = useReadContract({
+  const {
+    data: balance,
+    isLoading: cargandoBalance,
+    refetch: refetchBalance,
+  } = useReadContract({
     address: lockAddress,
     abi: PUBLIC_LOCK_ABI,
     functionName: "balanceOf",
@@ -50,6 +54,10 @@ export const useMembresia = (lockKey: string): Membresia => {
 
   const poseeAlgunaKey = (balance ?? 0n) > 0n;
 
+  // Se asume que el índice 0 es la key vigente del usuario en este Lock.
+  // Válido en nuestro dominio (una membresía por curso, un lock por curso);
+  // si un usuario llegara a acumular varias keys del mismo Lock, el índice 0
+  // no es necesariamente la más reciente ni la vigente.
   const { data: tokenId, refetch: refetchToken } = useReadContract({
     address: lockAddress,
     abi: PUBLIC_LOCK_ABI,
@@ -75,7 +83,18 @@ export const useMembresia = (lockKey: string): Membresia => {
     diasRestantes,
     tokenId,
     lockAddress,
-    isLoading: cargandoValidez,
+    // Sigue en true mientras quede alguna consulta dependiente pendiente:
+    // getHasValidKey/balanceOf en vuelo, balanceOf resuelto con keys pero
+    // tokenId aún sin llegar, o tokenId resuelto con expiracion aún sin llegar.
+    // Sin esto, un consumidor vería "activo" sin días restantes por un instante.
+    isLoading:
+      cargandoValidez ||
+      cargandoBalance ||
+      (poseeAlgunaKey && tokenId === undefined) ||
+      (tokenId !== undefined && expiracion === undefined),
+    // Dispara de nuevo las cuatro consultas; el reencadenamiento (balanceOf ->
+    // tokenOfOwnerByIndex -> keyExpirationTimestampFor) no es inmediato: ocurre
+    // por reactividad de wagmi/React Query cuando cambian `enabled` y los args.
     refetch: () => {
       void refetchValidez();
       void refetchBalance();
