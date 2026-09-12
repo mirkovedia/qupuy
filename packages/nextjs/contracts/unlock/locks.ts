@@ -1,5 +1,5 @@
 import type { Address } from "viem";
-import { baseSepolia } from "viem/chains";
+import { sepolia } from "viem/chains";
 
 /**
  * Dirección placeholder mientras no se despliegan los Locks reales.
@@ -14,7 +14,7 @@ const leerLock = (variable: string | undefined): Address => (variable as Address
  * no requiere tocar componentes ni hooks.
  */
 export const LOCKS_POR_RED: Record<number, Record<string, Address>> = {
-  [baseSepolia.id]: {
+  [sepolia.id]: {
     "ingles-basico": leerLock(process.env.NEXT_PUBLIC_LOCK_INGLES),
     "excel-negocios": leerLock(process.env.NEXT_PUBLIC_LOCK_EXCEL),
     "reparacion-celulares": leerLock(process.env.NEXT_PUBLIC_LOCK_CELULARES),

@@ -23,6 +23,7 @@
 | **Track** | ✅ **Unlock Protocol — Bounty 2** (Portal de Contenido Token-Gated) |
 | **Premio** | $250 (1er lugar) / $150 (2do) |
 | **Rol de este repo** | Será el **repositorio del proyecto final** |
+| **Repositorio** | https://github.com/mirkovedia/qupuy (público) |
 
 ### Estado del proyecto
 
@@ -130,7 +131,7 @@ _(nada en curso)_
 | - | --------- | -------- |
 | 1 | **Tracks sin anunciar** | Bloquea la definición del proyecto. Mientras tanto → ejecutar §8 |
 | 2 | **Checklist hora cero sin ejecutar** | 🔴 **AHORA.** Ver §8 — hacerlo antes de que salgan los tracks |
-| 3 | **Repo sin `git init`** | 🔴 **Bloqueante** — el plan asume commits desde la Tarea 1 |
+| 3 | ~~Repo sin git~~ | ✅ Resuelto — github.com/mirkovedia/qupuy |
 | 4 | **Locks sin desplegar** | 🔴 Alta — Tarea 11, única dependencia externa. Arrancar en paralelo |
 
 ---
