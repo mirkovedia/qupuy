@@ -33,6 +33,11 @@ export const useTransferirAcceso = (lockAddress: Address | undefined, tokenId: b
       return false;
     }
 
+    if (!publicClient) {
+      notification.error("No se pudo confirmar la transacción. Revisa tu conexión.");
+      return false;
+    }
+
     setIsPending(true);
     try {
       const hash = await writeContractAsync({
@@ -42,7 +47,7 @@ export const useTransferirAcceso = (lockAddress: Address | undefined, tokenId: b
         args: [address, destino, tokenId],
       });
 
-      await publicClient?.waitForTransactionReceipt({ hash });
+      await publicClient.waitForTransactionReceipt({ hash });
       notification.success("Acceso pasado correctamente");
       return true;
     } catch (error) {
