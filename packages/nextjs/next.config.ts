@@ -6,18 +6,22 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
   },
-  // El SDK de Coinbase (dependencia transitiva de Scaffold-ETH 2) importa
-  // @x402/evm, que no está instalado. Qupuy no usa x402 ni ese SDK, así que la
-  // ruta nunca se ejecuta — pero el build de producción analiza el árbol
-  // completo de dependencias y falla al resolverlo. Se redirige a un módulo
-  // vacío.
+  // El SDK de Coinbase llega como dependencia transitiva de Scaffold-ETH 2 e
+  // importa varios subpaquetes de @x402 que no están en el árbol de
+  // dependencias. Qupuy no usa x402 ni ese SDK: la ruta nunca se ejecuta, pero
+  // el build de producción analiza todo el grafo y falla al resolverlos.
   //
-  // Next.js 16 usa Turbopack por defecto, que tiene su propia configuración de
-  // alias: no lee la de webpack.
+  // Se excluye el SDK del empaquetado en lugar de redirigir cada subpaquete
+  // uno a uno, que obligaría a perseguir cada import nuevo.
+  serverExternalPackages: ["@coinbase/cdp-sdk"],
   turbopack: {
     resolveAlias: {
       "@x402/evm": "./stubs/vacio.ts",
       "@x402/core": "./stubs/vacio.ts",
+      "@x402/core/client": "./stubs/vacio.ts",
+      "@x402/svm": "./stubs/vacio.ts",
+      "@x402/svm/exact/client": "./stubs/vacio.ts",
+      "@x402/evm/exact/client": "./stubs/vacio.ts",
     },
   },
 };
