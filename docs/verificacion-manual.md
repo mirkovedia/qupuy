@@ -101,7 +101,7 @@ El diferenciador del proyecto. **Wallet A → Wallet B.**
 | 31 | `yarn test` pasa (15/15) | ✓ |
 | 32 | `yarn next:build` termina sin errores | ✓ |
 | 33 | `yarn lint` sin errores en código propio | ✓ |
-| 34 | El despliegue en Vercel reproduce los escenarios 1, 2, 9 y 21 | |
+| 34 | El despliegue en Vercel reproduce los escenarios 1, 2, 9 y 21 | parcial: rutas y contenido verificados; falta probar compra en producción |
 | 35 | El README tiene las direcciones reales de los Locks | ✓ |
 | 36 | La declaración de código preexistente está completa | |
 | 37 | El video dura 3 minutos o menos | |
@@ -137,4 +137,4 @@ Completar durante la verificación:
 | Lock de Reparación de celulares | `0xa00fa3e21a65a77ba17953d88f926b650160313c` |
 | Hash de una compra de ejemplo | _(anotar durante la verificación)_ |
 | Hash de una transferencia de ejemplo | _(anotar durante la verificación)_ |
-| URL pública (Vercel) | _(pendiente de desplegar)_ |
+| URL pública (Vercel) | https://qupuy.vercel.app |

@@ -11,6 +11,9 @@ Portal de cursos donde el acceso es una membresía de Unlock que el alumno
 **ETH Bolivia Buildathon 2026 · Cochabamba** — Track de Unlock Protocol,
 Bounty 2: Portal de Contenido Token-Gated.
 
+**▶ Pruébalo: [qupuy.vercel.app](https://qupuy.vercel.app)**
+(necesitas una wallet con ETH de Sepolia — [faucet](https://sepolia-faucet.pk910.de/))
+
 ---
 
 ## El problema
