@@ -4,6 +4,7 @@ import { useState } from "react";
 import { BotonDesbloquear } from "~~/components/cursos/BotonDesbloquear";
 import { EstadoMembresia } from "~~/components/cursos/EstadoMembresia";
 import { ListaModulos } from "~~/components/cursos/ListaModulos";
+import { ModalTransferir } from "~~/components/cursos/ModalTransferir";
 import { ReproductorVideo } from "~~/components/cursos/ReproductorVideo";
 import { useMembresia } from "~~/hooks/useMembresia";
 import type { Curso, Modulo } from "~~/types/curso";
@@ -13,7 +14,7 @@ type Props = {
 };
 
 export const VistaCurso = ({ curso }: Props) => {
-  const { estado, tieneAcceso, diasRestantes, lockAddress, isLoading, refetch } = useMembresia(curso.lockKey);
+  const { estado, tieneAcceso, diasRestantes, tokenId, lockAddress, isLoading, refetch } = useMembresia(curso.lockKey);
   const moduloGratuito = curso.modulos.find(m => m.esGratuito) ?? curso.modulos[0];
   const [moduloActivo, setModuloActivo] = useState<Modulo>(moduloGratuito);
 
@@ -64,6 +65,10 @@ export const VistaCurso = ({ curso }: Props) => {
           />
 
           {!tieneAcceso && <BotonDesbloquear curso={curso} lockAddress={lockAddress} onCompraExitosa={refetch} />}
+
+          {tieneAcceso && (
+            <ModalTransferir curso={curso} lockAddress={lockAddress} tokenId={tokenId} onTransferencia={refetch} />
+          )}
         </aside>
       </div>
     </div>
