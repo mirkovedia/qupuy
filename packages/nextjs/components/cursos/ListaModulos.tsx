@@ -20,11 +20,11 @@ export const ListaModulos = ({ modulos, tieneAcceso, moduloActivoId, onSeleccion
   const desbloqueados = modulos.filter(m => tieneAcceso || m.esGratuito).length;
 
   return (
-    <div className="bg-base-200 rounded-box overflow-hidden">
+    <div className="bg-base-100 border border-base-content/10 overflow-hidden">
       <div className="px-4 pt-4 pb-2 flex items-baseline justify-between">
-        <span className="font-semibold">Contenido del curso</span>
-        <span className="text-xs text-base-content/60">
-          {desbloqueados} de {modulos.length} disponibles
+        <span className="text-xs uppercase tracking-[0.14em] text-base-content/50">Contenido</span>
+        <span className="dato text-base-content/40">
+          {desbloqueados}/{modulos.length}
         </span>
       </div>
 
@@ -41,15 +41,17 @@ export const ListaModulos = ({ modulos, tieneAcceso, moduloActivoId, onSeleccion
                 onClick={() => onSeleccionar(modulo)}
                 aria-current={esActivo ? "true" : undefined}
                 className={`flex justify-between ${
-                  esActivo ? "bg-primary text-primary-content font-medium" : ""
+                  esActivo ? "bg-primary/12 text-primary border-l-2 border-primary" : "border-l-2 border-transparent"
                 } ${desbloqueado ? "" : "opacity-60 cursor-not-allowed"}`}
               >
                 <span className="flex gap-3 items-center text-left">
-                  <span className={esActivo ? "" : "text-base-content/50"}>{esActivo ? "▶" : `${indice + 1}.`}</span>
+                  <span className={`dato ${esActivo ? "text-primary" : "text-base-content/35"}`}>
+                    {esActivo ? "▶" : `${indice + 1}`}
+                  </span>
                   <span>{modulo.titulo}</span>
                 </span>
                 <span className="flex gap-2 items-center shrink-0">
-                  <span className={`text-xs ${esActivo ? "" : "text-base-content/60"}`}>
+                  <span className={`dato ${esActivo ? "text-primary/80" : "text-base-content/40"}`}>
                     {formatearDuracion(modulo.duracionSegundos)}
                   </span>
                   {desbloqueado ? (

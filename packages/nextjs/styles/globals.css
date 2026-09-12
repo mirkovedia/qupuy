@@ -2,103 +2,142 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/*
+  Qupuy — sistema visual
+  ─────────────────────
+  La paleta sale del aguayo, el textil andino: color vivo sobre fondo de tierra.
+  Los tres acentos vienen del logo — una llave que se convierte en flecha:
+
+    chicha  lo que posees        (el cuerpo de la llave)
+    maíz    hacia dónde se mueve (la punta de flecha)
+    cielo   lo que circula       (la transferencia)
+*/
+
 @theme {
+  --color-tierra: #1a1512;
+  --color-barro: #241d18;
+  --color-arcilla: #33291f;
+  --color-chicha: #d4463c;
+  --color-maiz: #e8b04b;
+  --color-cielo: #4a9d9c;
+  --color-hueso: #f2ede4;
+
+  --font-display: var(--fuente-display), Georgia, "Times New Roman", serif;
+  --font-sans: var(--fuente-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--fuente-mono), ui-monospace, "SF Mono", monospace;
+
   --shadow-center: 0 0 12px -2px rgb(0 0 0 / 0.05);
   --animate-pulse-fast: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @plugin "daisyui" {
   themes:
-    light,
-    dark --prefersdark;
+    qupuy --default,
+    qupuyclaro;
 }
 
 @plugin "daisyui/theme" {
-  name: "light";
+  name: "qupuy";
+  color-scheme: dark;
 
-  --color-primary: #93bbfb;
-  --color-primary-content: #212638;
-  --color-secondary: #dae8ff;
-  --color-secondary-content: #212638;
-  --color-accent: #93bbfb;
-  --color-accent-content: #212638;
-  --color-neutral: #212638;
-  --color-neutral-content: #ffffff;
-  --color-base-100: #ffffff;
-  --color-base-200: #f4f8ff;
-  --color-base-300: #dae8ff;
-  --color-base-content: #212638;
-  --color-info: #93bbfb;
-  --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
+  --color-primary: #d4463c;
+  --color-primary-content: #fdf8f2;
+  --color-secondary: #33291f;
+  --color-secondary-content: #f2ede4;
+  --color-accent: #e8b04b;
+  --color-accent-content: #1a1512;
+  --color-neutral: #33291f;
+  --color-neutral-content: #f2ede4;
 
-  --radius-field: 0rem;
-  --radius-box: 0rem;
-  --radius-selector: 0rem;
+  --color-base-100: #241d18;
+  --color-base-200: #1a1512;
+  --color-base-300: #33291f;
+  --color-base-content: #f2ede4;
+
+  --color-info: #4a9d9c;
+  --color-info-content: #0f1a1a;
+  --color-success: #e8b04b;
+  --color-success-content: #1a1512;
+  --color-warning: #c8803a;
+  --color-warning-content: #1a1512;
+  --color-error: #d4463c;
+  --color-error-content: #fdf8f2;
+
+  --radius-field: 0.125rem;
+  --radius-box: 0.25rem;
+  --radius-selector: 0.125rem;
 
   --tt-tailw: 6px;
+  --tt-bg: var(--color-base-300);
 }
 
 @plugin "daisyui/theme" {
-  name: "dark";
+  name: "qupuyclaro";
+  color-scheme: light;
 
-  --color-primary: #212638;
-  --color-primary-content: #f9fbff;
-  --color-secondary: #323f61;
-  --color-secondary-content: #f9fbff;
-  --color-accent: #4969a6;
-  --color-accent-content: #f9fbff;
-  --color-neutral: #f9fbff;
-  --color-neutral-content: #385183;
-  --color-base-100: #385183;
-  --color-base-200: #2a3655;
-  --color-base-300: #212638;
-  --color-base-content: #f9fbff;
-  --color-info: #385183;
-  --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
+  --color-primary: #c23b32;
+  --color-primary-content: #fdf8f2;
+  --color-secondary: #e8dfd0;
+  --color-secondary-content: #2a2119;
+  --color-accent: #c8803a;
+  --color-accent-content: #fdf8f2;
+  --color-neutral: #2a2119;
+  --color-neutral-content: #f7f2e9;
 
-  --radius-field: 0rem;
-  --radius-box: 0rem;
-  --radius-selector: 0rem;
+  --color-base-100: #fdfaf5;
+  --color-base-200: #f5efe4;
+  --color-base-300: #e8dfd0;
+  --color-base-content: #2a2119;
+
+  --color-info: #35726f;
+  --color-info-content: #fdf8f2;
+  --color-success: #9a6b1f;
+  --color-success-content: #fdf8f2;
+  --color-warning: #a9631f;
+  --color-warning-content: #fdf8f2;
+  --color-error: #c23b32;
+  --color-error-content: #fdf8f2;
+
+  --radius-field: 0.125rem;
+  --radius-box: 0.25rem;
+  --radius-selector: 0.125rem;
 
   --tt-tailw: 6px;
-  --tt-bg: var(--color-primary);
+  --tt-bg: var(--color-base-300);
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
   *,
   ::after,
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-
-  p {
-    margin: 1rem 0;
+    border-color: color-mix(in srgb, var(--color-base-content) 12%, transparent);
   }
 
   body {
     min-height: 100vh;
+    font-family: var(--font-sans);
+    font-feature-settings: "cv05", "cv08";
   }
 
   h1,
   h2,
-  h3,
+  h3 {
+    font-family: var(--font-display);
+    font-variation-settings: "SOFT" 20;
+    letter-spacing: -0.015em;
+    line-height: 1.05;
+    margin-bottom: 0.5rem;
+  }
+
   h4 {
     margin-bottom: 0.5rem;
-    line-height: 1;
+    line-height: 1.1;
+  }
+
+  p {
+    margin: 1rem 0;
   }
 }
 
@@ -109,6 +148,8 @@
 
 .btn {
   box-shadow: none;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .link {
@@ -117,4 +158,57 @@
 
 .link:hover {
   opacity: 80%;
+}
+
+/*
+  La banda de aguayo.
+
+  Un textil andino tejido en franjas que se repiten. Aquí marca el estado del
+  acceso: apagada cuando no lo tienes, con los colores del logo cuando sí.
+  Es el elemento que se recuerda de la interfaz.
+*/
+.aguayo {
+  height: 3px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-chicha) 0 14px,
+    var(--color-maiz) 14px 22px,
+    var(--color-cielo) 22px 28px,
+    transparent 28px 34px
+  );
+}
+
+.aguayo-apagado {
+  background-image: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-base-content) 22%, transparent) 0 14px,
+    transparent 14px 34px
+  );
+}
+
+/* Al transferir el acceso, la banda se desplaza hacia el siguiente. */
+@keyframes aguayo-pasa {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: 34px;
+  }
+}
+
+.aguayo-animado {
+  animation: aguayo-pasa 1.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aguayo-animado {
+    animation: none;
+  }
+}
+
+/* Direcciones de contrato y datos onchain: siempre monoespaciados. */
+.dato {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
 }

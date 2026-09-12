@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
 import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
+import { LogoQupuy } from "~~/components/LogoQupuy";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 
@@ -69,34 +70,36 @@ export const Header = () => {
   });
 
   return (
-    <div className="sticky lg:static top-0 navbar bg-base-100 min-h-16 shrink-0 justify-between z-20 border-b-2 border-base-300 p-0 sm:px-2">
-      <div className="navbar-start w-auto self-stretch">
-        <details className="dropdown" ref={burgerMenuRef}>
-          <summary className="ml-1 btn btn-ghost lg:hidden hover:bg-transparent">
-            <Bars3Icon className="h-1/2" />
-          </summary>
-          <ul
-            className="menu menu-compact dropdown-content mt-3 p-2 shadow-lg bg-base-100 w-52"
-            onClick={() => {
-              burgerMenuRef?.current?.removeAttribute("open");
-            }}
-          >
+    <div className="sticky lg:static top-0 z-20 shrink-0">
+      <div className="aguayo" />
+      <div className="navbar bg-base-100 min-h-16 justify-between border-b border-base-content/10 p-0 sm:px-2">
+        <div className="navbar-start w-auto self-stretch">
+          <details className="dropdown" ref={burgerMenuRef}>
+            <summary className="ml-1 btn btn-ghost lg:hidden hover:bg-transparent">
+              <Bars3Icon className="h-1/2" />
+            </summary>
+            <ul
+              className="menu menu-compact dropdown-content mt-3 p-2 shadow-lg bg-base-100 w-52"
+              onClick={() => {
+                burgerMenuRef?.current?.removeAttribute("open");
+              }}
+            >
+              <HeaderMenuLinks />
+            </ul>
+          </details>
+          <Link href="/" passHref className="hidden lg:flex items-baseline gap-3 ml-4 mr-8 shrink-0 group">
+            <LogoQupuy className="h-6 w-auto self-center transition-transform group-hover:translate-x-0.5" />
+            <span className="font-display text-xl leading-none tracking-tight">qupuy</span>
+            <span className="text-[11px] text-base-content/45 italic leading-none">v. dar a otro; pagar</span>
+          </Link>
+          <ul className="hidden lg:flex lg:flex-nowrap h-full m-0 p-0 list-none">
             <HeaderMenuLinks />
           </ul>
-        </details>
-        <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
-          <div className="flex flex-col">
-            <span className="font-bold leading-tight text-lg">Qupuy</span>
-            <span className="text-xs opacity-70">Cursos con acceso transferible</span>
-          </div>
-        </Link>
-        <ul className="hidden lg:flex lg:flex-nowrap h-full m-0 p-0 list-none">
-          <HeaderMenuLinks />
-        </ul>
-      </div>
-      <div className="navbar-end grow mr-4">
-        <RainbowKitCustomConnectButton />
-        {isLocalNetwork && <FaucetButton />}
+        </div>
+        <div className="navbar-end grow mr-4">
+          <RainbowKitCustomConnectButton />
+          {isLocalNetwork && <FaucetButton />}
+        </div>
       </div>
     </div>
   );

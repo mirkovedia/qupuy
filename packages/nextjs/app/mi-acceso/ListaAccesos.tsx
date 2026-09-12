@@ -14,8 +14,8 @@ export const ListaAccesos = ({ cursos }: Props) => {
 
   if (!address) {
     return (
-      <div className="alert alert-info">
-        <span>Conecta tu wallet para ver tus accesos.</span>
+      <div className="border border-base-content/15 bg-base-100 p-6">
+        <p className="text-base-content/70 m-0">Conecta tu wallet para ver tus accesos.</p>
       </div>
     );
   }
@@ -30,7 +30,7 @@ export const ListaAccesos = ({ cursos }: Props) => {
 
       <div className="text-center mt-10">
         <p className="text-base-content/70 mb-3">Los cursos que desbloquees aparecerán aquí.</p>
-        <Link href="/" className="btn btn-outline">
+        <Link href="/" className="btn btn-sm btn-outline">
           Ver todos los cursos
         </Link>
       </div>

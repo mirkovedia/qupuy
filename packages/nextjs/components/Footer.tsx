@@ -44,9 +44,9 @@ export const Footer = () => {
       <div className="w-full">
         <ul className="menu menu-horizontal w-full">
           <div className="flex justify-center items-center gap-2 text-sm w-full">
-            <span className="font-medium">Qupuy</span>
+            <span className="font-display text-base">qupuy</span>
             <span>·</span>
-            <span className="text-base-content/70">Cursos con acceso transferible</span>
+            <span className="text-base-content/50 italic text-xs">v. dar a otro; pagar</span>
             <span>·</span>
             <a href="https://github.com/mirkovedia/qupuy" target="_blank" rel="noreferrer" className="link">
               Código fuente

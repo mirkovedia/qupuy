@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { BotonDesbloquear } from "~~/components/cursos/BotonDesbloquear";
 import { EstadoMembresia } from "~~/components/cursos/EstadoMembresia";
 import { ListaModulos } from "~~/components/cursos/ListaModulos";
@@ -27,37 +28,47 @@ export const VistaCurso = ({ curso }: Props) => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-10">
-        <div className="skeleton h-8 w-72 mb-4" />
-        <div className="skeleton aspect-video w-full" />
+      <div className="container mx-auto px-4 sm:px-6 py-10 max-w-6xl">
+        <div className="skeleton h-10 w-80 mb-3" />
+        <div className="skeleton h-4 w-48 mb-8" />
+        <div className="grid gap-8 lg:grid-cols-[1.8fr_1fr]">
+          <div className="skeleton aspect-video w-full" />
+          <div className="skeleton h-64 w-full" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-10">
-      <header className="mb-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-3xl font-bold">{curso.titulo}</h1>
+    <div className="container mx-auto px-4 sm:px-6 py-10 max-w-6xl">
+      <Link href="/" className="dato text-base-content/40 hover:text-base-content/70 transition-colors">
+        ← Catálogo
+      </Link>
+
+      <header className="mt-5 mb-8 pb-6 border-b border-base-content/10">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-4xl sm:text-5xl font-display leading-none m-0">{curso.titulo}</h1>
+            <p className="text-sm text-base-content/55 mt-3 mb-0">
+              {curso.creador.nombre} · {curso.creador.ciudad}
+            </p>
+          </div>
           <EstadoMembresia estado={estado} diasRestantes={diasRestantes} />
         </div>
-        <p className="text-base-content/70 mt-1">
-          Por {curso.creador.nombre} · {curso.creador.ciudad}
-        </p>
       </header>
 
-      <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
-        <div className="space-y-6">
+      <div className="grid gap-8 lg:gap-10 lg:grid-cols-[1.8fr_1fr] items-start">
+        <div>
           <ReproductorVideo
             src={moduloReproducible.videoUrl}
             titulo={moduloReproducible.titulo}
             esVistaPrevia={!tieneAcceso}
             diapositivas={moduloReproducible.diapositivas ?? 0}
           />
-          <p>{curso.descripcion}</p>
+          <p className="text-base-content/70 leading-relaxed mt-8">{curso.descripcion}</p>
         </div>
 
-        <aside className="space-y-6">
+        <aside className="space-y-5 lg:sticky lg:top-6">
           <ListaModulos
             modulos={curso.modulos}
             tieneAcceso={tieneAcceso}
