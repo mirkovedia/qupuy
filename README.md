@@ -111,7 +111,7 @@ directamente. Todo pasa por la capa de acceso.
 | `keyExpirationTimestampFor(tokenId)` | Días restantes | `hooks/useMembresia.ts` |
 | `keyPrice()` | Precio de la membresía | `hooks/useComprarAcceso.ts` |
 | `purchase(...)` | Comprar la membresía | `hooks/useComprarAcceso.ts` |
-| `transferFrom(from, to, tokenId)` | Pasar el acceso a otra persona | `hooks/useTransferirAcceso.ts` _(en desarrollo)_ |
+| `transferFrom(from, to, tokenId)` | Pasar el acceso a otra persona | `hooks/useTransferirAcceso.ts` |
 
 ### La decisión técnica central: `getHasValidKey`, nunca `balanceOf`
 
@@ -167,11 +167,14 @@ reescribir la aplicación.
 
 ## Locks desplegados
 
-| Curso | Red | Dirección del Lock |
-| ----- | --- | ------------------ |
-| Inglés desde cero | Sepolia (11155111) | _pendiente de desplegar_ |
-| Excel para tu negocio | Sepolia (11155111) | _pendiente de desplegar_ |
-| Reparación de celulares | Sepolia (11155111) | _pendiente de desplegar_ |
+Los tres Locks están desplegados en **Sepolia** (chainId 11155111), con pago en
+ETH nativo y membresías de 30 días transferibles.
+
+| Curso | Precio | Dirección del Lock |
+| ----- | ------ | ------------------ |
+| Inglés desde cero | 0.0001 ETH | [`0x761963f20958660130181fa785ddd6efc64fa862`](https://sepolia.etherscan.io/address/0x761963f20958660130181fa785ddd6efc64fa862) |
+| Excel para tu negocio | 0.0001 ETH | [`0x911f1a42bdf3a896aa170a3ab3adde1e015e1eae`](https://sepolia.etherscan.io/address/0x911f1a42bdf3a896aa170a3ab3adde1e015e1eae) |
+| Reparación de celulares | 0.0002 ETH | [`0xa00fa3e21a65a77ba17953d88f926b650160313c`](https://sepolia.etherscan.io/address/0xa00fa3e21a65a77ba17953d88f926b650160313c) |
 
 Contrato Unlock en Sepolia: [`0x36b34e10295cCE69B652eEB5a8046041074515Da`](https://sepolia.etherscan.io/address/0x36b34e10295cCE69B652eEB5a8046041074515Da)
 
@@ -282,6 +285,9 @@ escribió durante la hackathon.
 packages/nextjs/
 ├── app/curso/[slug]/page.tsx          ├── hooks/useMembresia.ts
 ├── app/curso/[slug]/VistaCurso.tsx    ├── hooks/useComprarAcceso.ts
+├── components/cursos/ModalTransferir.tsx   ├── hooks/useTransferirAcceso.ts
+├── components/cursos/TarjetaAcceso.tsx    ├── app/mi-acceso/page.tsx
+├── app/mi-acceso/ListaAccesos.tsx
 ├── app/page.tsx  (reescrito)          ├── services/content/types.ts
 ├── components/cursos/BotonDesbloquear.tsx  ├── services/content/staticRepository.ts
 ├── components/cursos/CursoCard.tsx    ├── services/content/index.ts
