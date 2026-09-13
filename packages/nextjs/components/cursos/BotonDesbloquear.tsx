@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { Address } from "viem";
 import { formatEther } from "viem";
 import { useAccount, useSwitchChain } from "wagmi";
@@ -85,9 +86,14 @@ export const BotonDesbloquear = ({ curso, lockAddress, onCompraExitosa }: Props)
           <p className="dato text-center text-base-content/40 mt-3 mb-0">{formatEther(precio)} ETH</p>
         )}
 
-        <p className="text-xs text-base-content/55 leading-relaxed mt-4 mb-0 pt-4 border-t border-base-content/10">
-          Tu acceso es tuyo: al terminar, se lo puedes pasar a alguien.
-        </p>
+        <div className="mt-4 pt-4 border-t border-base-content/10">
+          <p className="text-xs text-base-content/55 leading-relaxed m-0 mb-2">
+            Tu acceso es tuyo: al terminar, se lo puedes pasar a alguien.
+          </p>
+          <Link href="/recibir" className="text-xs link text-base-content/45">
+            ¿Alguien te va a pasar este curso? →
+          </Link>
+        </div>
       </div>
     </div>
   );

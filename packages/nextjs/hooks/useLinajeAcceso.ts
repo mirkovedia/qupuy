@@ -32,24 +32,33 @@ export type PasoLinaje = {
 
 export type Linaje = {
   pasos: PasoLinaje[];
-  /** Cuántas veces se pasó de una persona a otra (sin contar la compra). */
+  /** Cuántas veces se pasó de una persona a otra (sin contar las compras). */
   vecesPasado: number;
-  /** Personas distintas que han tenido este acceso. */
+  /** Personas distintas que han tenido un acceso a este curso. */
   personas: number;
+  /** Cuántos accesos se han comprado al creador. */
+  compras: number;
+  /** true cuando se muestra la actividad del curso, no la de un acceso concreto. */
+  esDelCurso: boolean;
   isLoading: boolean;
 };
 
 /**
- * Historia de un acceso: quién lo compró y por qué manos ha pasado.
+ * Historia de los accesos a un curso.
  *
- * Se reconstruye desde los eventos `Transfer` del Lock. En un ERC-721 el
- * primero tiene `from = 0x0` — ese es el minteo, la compra original. Los
+ * Con `tokenId`, reconstruye el recorrido de ese acceso concreto: quién lo
+ * compró y a quién se lo fue pasando. Sin él, devuelve la actividad completa
+ * del curso — cuántos accesos se vendieron y cuántas veces circularon — para
+ * que un visitante pueda verlo antes de comprar.
+ *
+ * Se lee de los eventos `Transfer` del Lock. En un ERC-721 el primero de cada
+ * token tiene `from = 0x0`: ese es el minteo, la compra original. Los
  * siguientes son transferencias reales entre personas.
  *
  * Esto es lo que ninguna plataforma de cursos puede mostrar: Udemy no sabe a
  * quién le prestaste tu cuenta. Aquí la cadena completa está en la blockchain.
  */
-export const useLinajeAcceso = (lockKey: string, tokenId: bigint | undefined): Linaje => {
+export const useLinajeAcceso = (lockKey: string, tokenId?: bigint): Linaje => {
   const chainId = useChainId();
   const publicClient = usePublicClient();
   const lockAddress = resolverLock(lockKey, chainId);
@@ -58,7 +67,7 @@ export const useLinajeAcceso = (lockKey: string, tokenId: bigint | undefined): L
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!lockAddress || !publicClient || tokenId === undefined) {
+    if (!lockAddress || !publicClient) {
       setPasos([]);
       return;
     }
@@ -71,7 +80,8 @@ export const useLinajeAcceso = (lockKey: string, tokenId: bigint | undefined): L
         const registros = await publicClient.getLogs({
           address: lockAddress,
           event: EVENTO_TRANSFER,
-          args: { tokenId },
+          // Sin tokenId se leen todos los accesos del curso, no uno solo.
+          args: tokenId === undefined ? undefined : { tokenId },
           fromBlock: BLOQUE_DESPLIEGUE,
           toBlock: "latest",
         });
@@ -106,7 +116,8 @@ export const useLinajeAcceso = (lockKey: string, tokenId: bigint | undefined): L
   }, [lockAddress, publicClient, tokenId]);
 
   const vecesPasado = pasos.filter(p => !p.esCompra).length;
+  const compras = pasos.filter(p => p.esCompra).length;
   const personas = new Set(pasos.map(p => p.hacia.toLowerCase())).size;
 
-  return { pasos, vecesPasado, personas, isLoading };
+  return { pasos, vecesPasado, compras, personas, esDelCurso: tokenId === undefined, isLoading };
 };

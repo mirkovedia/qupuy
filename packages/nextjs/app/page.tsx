@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { NextPage } from "next";
 import { CadenaDemostrativa } from "~~/components/cursos/CadenaDemostrativa";
 import { CursoCard } from "~~/components/cursos/CursoCard";
@@ -63,6 +64,15 @@ const Home: NextPage = async () => {
           </p>
         </div>
       </section>
+
+      <div className="mt-14 pt-10 border-t border-base-content/10 flex flex-wrap items-center justify-between gap-6">
+        <p className="font-display text-2xl leading-tight m-0 max-w-md">
+          Un acceso que compras una vez y puedes pasar cuando termines.
+        </p>
+        <Link href="/recibir" className="btn btn-outline btn-sm shrink-0">
+          Alguien me va a pasar un curso →
+        </Link>
+      </div>
     </div>
   );
 };
