@@ -58,8 +58,8 @@ const Debug: NextPage = () => {
               </li>
             </ul>
             <p className="text-xs text-base-content/50 leading-relaxed mt-3 mb-0">
-              La segunda dirección sí devuelve <span className="dato">true</span> en{" "}
-              <span className="dato">LockIngles</span>: ese acceso no se transfirió.
+              Prueba también con tu propia dirección: si no tienes el curso verás <span className="dato">false</span>, y
+              eso es exactamente lo que ve la aplicación. Ella no guarda nada: pregunta cada vez.
             </p>
           </div>
         </div>
