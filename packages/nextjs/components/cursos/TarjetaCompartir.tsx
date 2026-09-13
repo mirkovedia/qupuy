@@ -128,31 +128,31 @@ export const TarjetaCompartir = ({ titulo, creador, vecesPasado, personas }: Pro
   };
 
   const descargar = () => {
-    setGenerando(true);
-    try {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      dibujar(ctx);
-
-      canvas.toBlob(blob => {
-        if (!blob) {
-          notification.error("No se pudo generar la imagen");
-          return;
-        }
-        const url = URL.createObjectURL(blob);
-        const enlace = document.createElement("a");
-        enlace.href = url;
-        enlace.download = `qupuy-${titulo.toLowerCase().replace(/\s+/g, "-")}.png`;
-        enlace.click();
-        URL.revokeObjectURL(url);
-        notification.success("Imagen descargada");
-      }, "image/png");
-    } finally {
-      setGenerando(false);
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) {
+      notification.error("No se pudo generar la imagen");
+      return;
     }
+
+    setGenerando(true);
+    dibujar(ctx);
+
+    // toBlob es asíncrono: el botón se reactiva cuando la imagen existe.
+    canvas.toBlob(blob => {
+      setGenerando(false);
+      if (!blob) {
+        notification.error("No se pudo generar la imagen");
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = `qupuy-${titulo.toLowerCase().replace(/\s+/g, "-")}.png`;
+      enlace.click();
+      URL.revokeObjectURL(url);
+      notification.success("Imagen descargada");
+    }, "image/png");
   };
 
   return (

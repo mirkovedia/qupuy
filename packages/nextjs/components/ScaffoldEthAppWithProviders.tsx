@@ -35,20 +35,23 @@ export const queryClient = new QueryClient({
 
 export const ScaffoldEthAppWithProviders = ({ children }: { children: React.ReactNode }) => {
   const { resolvedTheme } = useTheme();
-  const isDarkMode = resolvedTheme === "dark";
+  // Los temas se llaman "qupuy" (oscuro, por defecto) y "qupuyclaro".
+  const isDarkMode = resolvedTheme !== "qupuyclaro";
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const temaWallet = { accentColor: "#d4463c", accentColorForeground: "#f2ede4", borderRadius: "small" } as const;
+
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <ProgressBar height="3px" color="#2299dd" />
+        <ProgressBar height="3px" color="#d4463c" />
         <RainbowKitProvider
           avatar={BlockieAvatar}
-          theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
+          theme={mounted && !isDarkMode ? lightTheme(temaWallet) : darkTheme(temaWallet)}
         >
           <ScaffoldEthApp>{children}</ScaffoldEthApp>
         </RainbowKitProvider>

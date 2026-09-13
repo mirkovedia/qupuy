@@ -38,6 +38,14 @@ export const EscanerDireccion = ({ onDireccion, onCerrar }: Props) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [error, setError] = useState<string>();
 
+  // El callback vive en una ref para que el efecto arranque la cámara una
+  // sola vez: si dependiera de `onDireccion`, cada render del padre la
+  // reiniciaría, con parpadeo y nueva petición de permiso.
+  const onDireccionRef = useRef(onDireccion);
+  useEffect(() => {
+    onDireccionRef.current = onDireccion;
+  }, [onDireccion]);
+
   useEffect(() => {
     const detector = crearDetector();
     if (!detector) {
@@ -66,7 +74,7 @@ export const EscanerDireccion = ({ onDireccion, onCerrar }: Props) => {
             const encontrada = codigos.map(c => c.rawValue.trim()).find(v => isAddress(v));
             if (encontrada) {
               clearInterval(temporizador);
-              onDireccion(encontrada);
+              onDireccionRef.current(encontrada);
             }
           } catch {
             // Un fotograma ilegible no es un fallo: se reintenta en el siguiente.
@@ -84,7 +92,7 @@ export const EscanerDireccion = ({ onDireccion, onCerrar }: Props) => {
       if (temporizador) clearInterval(temporizador);
       stream?.getTracks().forEach(t => t.stop());
     };
-  }, [onDireccion]);
+  }, []);
 
   return (
     <div className="border border-base-content/15 bg-base-100 overflow-hidden">

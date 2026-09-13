@@ -91,10 +91,13 @@ export const Header = () => {
               <HeaderMenuLinks />
             </ul>
           </details>
-          <Link href="/" passHref className="hidden lg:flex items-baseline gap-3 ml-4 mr-8 shrink-0 group">
+          {/* La marca se ve en todos los tamaños; el lema solo donde cabe. */}
+          <Link href="/" passHref className="flex items-baseline gap-3 ml-2 lg:ml-4 mr-4 lg:mr-8 shrink-0 group">
             <LogoQupuy className="h-6 w-auto self-center transition-transform group-hover:translate-x-0.5" />
             <span className="font-display text-xl leading-none tracking-tight">qupuy</span>
-            <span className="text-[11px] text-base-content/45 italic leading-none">v. dar a otro; pagar</span>
+            <span className="hidden lg:inline text-[11px] text-base-content/45 italic leading-none">
+              v. dar a otro; pagar
+            </span>
           </Link>
           <ul className="hidden lg:flex lg:flex-nowrap h-full m-0 p-0 list-none">
             <HeaderMenuLinks />

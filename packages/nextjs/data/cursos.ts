@@ -1,5 +1,12 @@
 import type { Curso } from "~~/types/curso";
 
+/**
+ * Contenido de demostración.
+ *
+ * Los videos son clips de archivo de Mixkit compartidos entre los tres cursos;
+ * las duraciones son las reales de cada archivo, no las de una clase
+ * imaginaria. En producción cada módulo apuntaría a su propio video.
+ */
 export const CURSOS: Curso[] = [
   {
     id: "1",
@@ -8,7 +15,6 @@ export const CURSOS: Curso[] = [
     descripcion:
       "Aprende a presentarte, hacer preguntas y sostener una conversación básica en inglés. Sin gramática aburrida.",
     creador: { nombre: "María Quispe", ciudad: "Cochabamba" },
-    portadaUrl: "/cursos/ingles.svg",
     precioBs: 70,
     duracionDias: 30,
     lockKey: "ingles-basico",
@@ -49,7 +55,6 @@ export const CURSOS: Curso[] = [
     titulo: "Excel para tu negocio",
     descripcion: "Lleva el control de tu tienda o emprendimiento: inventario, ventas y ganancias en planillas simples.",
     creador: { nombre: "Jorge Mamani", ciudad: "La Paz" },
-    portadaUrl: "/cursos/excel.svg",
     precioBs: 50,
     duracionDias: 30,
     lockKey: "excel-negocios",
@@ -57,21 +62,21 @@ export const CURSOS: Curso[] = [
       {
         id: "2-1",
         titulo: "Tu primera planilla de ventas",
-        duracionSegundos: 150,
+        duracionSegundos: 8,
         videoUrl: "/videos/ingles-01.mp4",
         esGratuito: true,
       },
       {
         id: "2-2",
         titulo: "Fórmulas que sí vas a usar",
-        duracionSegundos: 600,
+        duracionSegundos: 11,
         videoUrl: "/videos/ingles-02.mp4",
         esGratuito: false,
       },
       {
         id: "2-3",
         titulo: "Control de inventario",
-        duracionSegundos: 520,
+        duracionSegundos: 6,
         videoUrl: "/videos/ingles-03.mp4",
         esGratuito: false,
       },
@@ -83,7 +88,6 @@ export const CURSOS: Curso[] = [
     titulo: "Reparación de celulares",
     descripcion: "Cambio de pantalla, batería y diagnóstico de fallas comunes. Empieza a cobrar por arreglar equipos.",
     creador: { nombre: "Luis Choque", ciudad: "Santa Cruz" },
-    portadaUrl: "/cursos/celulares.svg",
     precioBs: 120,
     duracionDias: 30,
     lockKey: "reparacion-celulares",
@@ -91,22 +95,22 @@ export const CURSOS: Curso[] = [
       {
         id: "3-1",
         titulo: "Herramientas que necesitas",
-        duracionSegundos: 180,
+        duracionSegundos: 8,
         videoUrl: "/videos/ingles-01.mp4",
         esGratuito: true,
       },
       {
         id: "3-2",
         titulo: "Cambiar una pantalla",
-        duracionSegundos: 720,
+        duracionSegundos: 11,
         videoUrl: "/videos/ingles-02.mp4",
         esGratuito: false,
       },
       {
         id: "3-3",
         titulo: "Reemplazo de batería",
-        duracionSegundos: 480,
-        videoUrl: "/videos/ingles-03.mp4",
+        duracionSegundos: 11,
+        videoUrl: "/videos/ingles-04.mp4",
         esGratuito: false,
       },
     ],
