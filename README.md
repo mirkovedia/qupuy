@@ -192,13 +192,13 @@ ha pasado.
 
 ```typescript
 // hooks/useLinajeAcceso.ts
-const registros = await publicClient.getLogs({
-  address: lockAddress,
-  event: EVENTO_TRANSFER,
-  args: { tokenId },
-  fromBlock: BLOQUE_DESPLIEGUE, // no "earliest": los nodos públicos lo rechazan
-});
+const registros = await leerTransferencias(lockAddress, BLOQUE_DESPLIEGUE, { tokenId });
 ```
+
+Los eventos se leen con un cliente aparte (`services/web3/clienteEventos.ts`)
+que parte el rango en tramos y usa RPC que admiten rangos amplios: `eth_getLogs`
+es la petición que más limitan los proveedores —el plan gratuito de Alchemy la
+restringe a 10 bloques— y no conviene atarla a la clave del RPC general.
 
 En un ERC-721 el primer evento tiene `from = 0x0` — ese es el minteo, la compra
 original. Los siguientes son transferencias reales entre personas.

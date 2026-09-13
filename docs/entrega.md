@@ -131,9 +131,9 @@ segundo: el acceso cambió de dueño, y solo una persona lo tiene a la vez.
 - [x] Ejecutar una transferencia real — bloque 11694004, hash arriba
 - [x] Comprobar que el repositorio es público
 - [x] Locks desplegados y verificados en Sepolia
-- [ ] Poner una clave propia de Alchemy en Vercel (`NEXT_PUBLIC_ALCHEMY_API_KEY`):
-      el RPC público rechaza `eth_getLogs` y el linaje depende de la clave
-      compartida de Scaffold-ETH
+- [x] Clave propia de Alchemy en Vercel (`NEXT_PUBLIC_ALCHEMY_API_KEY`) para las
+      lecturas. Los eventos van por un cliente aparte (Tenderly → PublicNode):
+      el plan gratuito de Alchemy limita `eth_getLogs` a 10 bloques
 - [ ] Prestar y recuperar un acceso en Sepolia (dos transacciones) y anotar
       los hashes aquí
 - [ ] Grabar el video (≤ 3 minutos)

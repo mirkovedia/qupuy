@@ -2,10 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query";
 import type { Address } from "viem";
-import { usePublicClient, useReadContract } from "wagmi";
+import { useReadContract } from "wagmi";
 import { BLOQUE_DESPLIEGUE, resolverLock } from "~~/contracts/unlock/locks";
-import { DIRECCION_CERO, EVENTO_TRANSFER, PUBLIC_LOCK_ABI } from "~~/contracts/unlock/publicLockAbi";
+import { DIRECCION_CERO, PUBLIC_LOCK_ABI } from "~~/contracts/unlock/publicLockAbi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { leerTransferencias } from "~~/services/web3/clienteEventos";
 import type { AllowedChainIds } from "~~/utils/scaffold-eth";
 
 export type PasoLinaje = {
@@ -51,11 +52,14 @@ export type Linaje = {
  *
  * La consulta vive en React Query: se invalida tras cada transacción, así
  * que la historia se actualiza sola en cuanto un acceso cambia de manos.
+ *
+ * Los eventos se leen con un cliente aparte (`clienteEventos`): `eth_getLogs`
+ * es la petición que más limitan los proveedores, y no conviene atarla a la
+ * clave del RPC general.
  */
 export const useLinajeAcceso = (lockKey: string, tokenId?: bigint): Linaje => {
   const { targetNetwork } = useTargetNetwork();
   const chainId = targetNetwork.id as AllowedChainIds;
-  const publicClient = usePublicClient({ chainId });
   const lockAddress = resolverLock(lockKey, chainId);
 
   const {
@@ -65,19 +69,17 @@ export const useLinajeAcceso = (lockKey: string, tokenId?: bigint): Linaje => {
     refetch,
   } = useQuery({
     queryKey: ["linaje", chainId, lockAddress, tokenId === undefined ? "curso" : tokenId.toString()],
-    enabled: Boolean(lockAddress && publicClient),
+    enabled: Boolean(lockAddress),
     retry: 1,
     queryFn: async (): Promise<PasoLinaje[]> => {
-      if (!lockAddress || !publicClient) return [];
+      if (!lockAddress) return [];
       try {
-        const registros = await publicClient.getLogs({
-          address: lockAddress,
-          event: EVENTO_TRANSFER,
-          // Sin tokenId se leen todos los accesos del curso, no uno solo.
-          args: tokenId === undefined ? undefined : { tokenId },
-          fromBlock: BLOQUE_DESPLIEGUE,
-          toBlock: "latest",
-        });
+        // Sin tokenId se leen todos los accesos del curso, no uno solo.
+        const registros = await leerTransferencias(
+          lockAddress,
+          BLOQUE_DESPLIEGUE,
+          tokenId === undefined ? undefined : { tokenId },
+        );
 
         return registros.map(r => {
           const desde = r.args.from ?? DIRECCION_CERO;

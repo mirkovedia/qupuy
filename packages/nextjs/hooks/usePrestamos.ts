@@ -6,8 +6,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Address } from "viem";
 import { useAccount, usePublicClient, useWriteContract } from "wagmi";
 import { BLOQUE_DESPLIEGUE, resolverLock } from "~~/contracts/unlock/locks";
-import { EVENTO_TRANSFER, PUBLIC_LOCK_ABI } from "~~/contracts/unlock/publicLockAbi";
+import { PUBLIC_LOCK_ABI } from "~~/contracts/unlock/publicLockAbi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { leerTransferencias } from "~~/services/web3/clienteEventos";
 import { type AllowedChainIds, getParsedError, notification } from "~~/utils/scaffold-eth";
 
 export type Prestamo = {
@@ -40,13 +41,7 @@ export const usePrestamos = (lockKey: string) => {
     queryFn: async (): Promise<Prestamo[]> => {
       if (!lockAddress || !address || !publicClient) return [];
       try {
-        const salidas = await publicClient.getLogs({
-          address: lockAddress,
-          event: EVENTO_TRANSFER,
-          args: { from: address },
-          fromBlock: BLOQUE_DESPLIEGUE,
-          toBlock: "latest",
-        });
+        const salidas = await leerTransferencias(lockAddress, BLOQUE_DESPLIEGUE, { from: address });
 
         const tokenIds = [...new Set(salidas.map(s => s.args.tokenId).filter((id): id is bigint => id !== undefined))];
 
