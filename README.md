@@ -106,15 +106,25 @@ directamente. Todo pasa por la capa de acceso.
 
 ### Funciones del PublicLock que usa el proyecto
 
+Los Locks son **PublicLock v14** (`publicLockVersion()` lo confirma on-chain).
+Todo lo de abajo está verificado contra el código fuente de esa versión.
+
 | Función | Para qué | Dónde |
 | ------- | -------- | ----- |
 | `getHasValidKey(address)` | **Determinar el acceso** | `hooks/useMembresia.ts` |
-| `balanceOf(address)` | Saber si posee alguna membresía (para obtener su tokenId) | `hooks/useMembresia.ts` |
+| `totalKeys(address)` | Saber si posee alguna membresía, vigente o vencida, para llegar a su tokenId | `hooks/useMembresia.ts` |
 | `tokenOfOwnerByIndex(address, 0)` | Obtener el tokenId del usuario | `hooks/useMembresia.ts` |
 | `keyExpirationTimestampFor(tokenId)` | Días restantes | `hooks/useMembresia.ts` |
-| `keyPrice()` | Precio de la membresía | `hooks/useComprarAcceso.ts` |
+| `keyManagerOf(tokenId)` | Saber si un acceso es un préstamo | `hooks/useMembresia.ts` |
+| `purchasePriceFor(...)`, `keyPrice()` | Precio de la membresía | `hooks/useComprarAcceso.ts` |
+| `expirationDuration()`, `tokenAddress()` | Duración y moneda del Lock | `hooks/useComprarAcceso.ts` |
 | `purchase(...)` | Comprar la membresía | `hooks/useComprarAcceso.ts` |
-| `transferFrom(from, to, tokenId)` | Pasar el acceso a otra persona | `hooks/useTransferirAcceso.ts` |
+| `extend(...)` | Renovar una membresía vencida | `hooks/useComprarAcceso.ts` |
+| `transferFrom(from, to, tokenId)` | **Regalar** el acceso | `hooks/useTransferirAcceso.ts` |
+| `lendKey(from, to, tokenId)` | **Prestar** el acceso | `hooks/useTransferirAcceso.ts` |
+| `unlendKey(to, tokenId)` | Recuperar un préstamo | `hooks/usePrestamos.ts` |
+| `totalSupply()` | Accesos vendidos | `hooks/useLinajeAcceso.ts` |
+| evento `Transfer` | El linaje del acceso | `hooks/useLinajeAcceso.ts` |
 
 ### La decisión técnica central: `getHasValidKey`, nunca `balanceOf`
 
@@ -128,26 +138,47 @@ const { data: tieneKeyValida } = useReadContract({
 });
 ```
 
-`balanceOf` devuelve 1 aunque la membresía esté vencida, porque el NFT permanece
-en la wallet tras expirar. Solo `getHasValidKey` comprueba la validez temporal.
+`getHasValidKey` es el contrato explícito de "tiene acceso ahora": comprueba la
+expiración y ejecuta los hooks de validez del Lock. `balanceOf` no sirve para
+decidir el acceso porque su semántica ha cambiado entre versiones del
+PublicLock: en la v14 desplegada aquí solo cuenta keys válidas —recorre las
+keys de la wallet y llama a `isValidKey`—, y en versiones anteriores contaba
+todas. Apoyar el acceso en ella acoplaría la aplicación a la versión del
+contrato.
 
-El proyecto usa `balanceOf` únicamente para averiguar si el usuario posee alguna
-membresía y así poder consultar su `tokenId`. **Nunca para decidir el acceso.**
+Para saber si una wallet posee alguna membresía —vigente o vencida— y llegar a
+su `tokenId`, Qupuy usa `totalKeys`, que cuenta todas. Así el estado "vencido"
+existe de verdad, y la renovación llama a `extend`: Unlock rechaza un
+`purchase` cuando ya posees una key, aunque esté vencida (`MAX_KEYS_REACHED`).
 
-### El gating es real, no cosmético
+### El gating está en el render
 
 ```typescript
 // app/curso/[slug]/VistaCurso.tsx
 const moduloReproducible = tieneAcceso ? moduloActivo : moduloGratuito;
 ```
 
-Cuando el visitante no tiene membresía, **las URLs de los módulos de pago nunca
-llegan al navegador**. No se renderizan ni se ocultan con CSS: sencillamente no
-existen en la página.
-
+Sin membresía válida, ningún reproductor recibe la URL de una clase de pago,
+la lista deshabilita sus botones y ninguna interacción puede seleccionarlas.
 La expresión se recalcula en cada render, lo que la hace correcta también en el
-caso difícil: si un usuario con acceso selecciona el módulo 3 y luego transfiere
-su membresía, la vista vuelve al módulo gratuito de inmediato.
+caso difícil: si un usuario con acceso selecciona el módulo 3 y luego pasa su
+membresía, la vista vuelve al módulo gratuito de inmediato.
+
+Lo que este gating **no** hace: impedir que las URLs viajen al navegador como
+datos de la página. Ver *Limitación conocida*.
+
+### Prestar o regalar
+
+Unlock distingue dos formas de pasar una key, y Qupuy expone las dos:
+
+| | Función | Qué pasa |
+| - | ------- | -------- |
+| **Regalar** | `transferFrom` | Definitivo. El receptor es dueño pleno y puede volver a pasarlo. |
+| **Prestar** | `lendKey` | Quien presta sigue siendo el *key manager*: el receptor tiene el acceso, no puede pasarlo a nadie, y el préstamo se recupera con `unlendKey`. |
+
+"Como se presta un libro" deja de ser una metáfora: es una operación del
+contrato. Y la pantalla de quien recibe (`/recibir`) consulta el Lock cada
+pocos segundos, así que anuncia sola el acceso en cuanto llega.
 
 ### El linaje del acceso
 
@@ -237,7 +268,7 @@ Sepolia ([faucet de prueba de trabajo](https://sepolia-faucet.pk910.de/)).
 
 ```bash
 yarn start          # servidor de desarrollo
-yarn test           # tests de lógica (15)
+yarn test           # tests de lógica (19)
 yarn next:build     # build de producción
 yarn lint           # lint
 ```
@@ -271,20 +302,29 @@ datos es reemplazar una implementación, no reescribir la aplicación.
 usuario final de Qupuy es un profesor boliviano o su alumno; la tecnología está
 debajo, no delante.
 
-**Los tests cubren la lógica pura, no la UI.** Quince tests sobre el cálculo de
-expiración, la resolución de Locks y el repositorio de contenido — donde los
-bugs son silenciosos. La interfaz se verifica manualmente contra una lista de
-escenarios documentada.
+**Los tests cubren la lógica pura, no la UI.** Diecinueve tests sobre el
+cálculo de expiración, la lectura y resolución de Locks y el repositorio de
+contenido — donde los bugs son silenciosos. La interfaz se verifica manualmente
+contra una lista de escenarios documentada.
+
+**Las lecturas van siempre a la red del Lock; las escrituras exigen la wallet
+en ella.** Un usuario con la wallet en otra red sigue viendo su estado. Al
+comprar o pasar un acceso, el `chainId` del Lock viaja explícitamente en la
+transacción: wagmi rechaza la firma si la wallet está en otra cadena, en lugar
+de enviarla donde esté.
 
 ---
 
 ## Limitación conocida
 
-Con contenido servido estáticamente, las URLs de los videos son descubribles
-mediante las herramientas de desarrollo del navegador. Es aceptable y habitual
-en una demo; la ruta de producción son URLs firmadas con expiración corta,
-emitidas por un endpoint que valida la membresía del lado del servidor antes de
-entregarlas.
+Las URLs de los videos son datos de la página: viajan al navegador aunque la
+membresía no exista, y son descubribles con las herramientas de desarrollo. El
+gating decide qué se reproduce, no qué se puede descargar.
+
+Es aceptable en una demo con archivos estáticos. La ruta de producción son URLs
+firmadas con expiración corta, emitidas por un endpoint que valida la membresía
+con `getHasValidKey` del lado del servidor —con la wallet autenticada por firma
+(SIWE)— antes de entregarlas.
 
 Se documenta aquí porque un jurado técnico lo notaría, y ocultarlo sería peor
 que reconocerlo.
@@ -314,24 +354,31 @@ escribió durante la hackathon.
 
 ```
 packages/nextjs/
-├── app/
-│   ├── page.tsx  (reescrito)          ├── hooks/useMembresia.ts
-│   ├── curso/[slug]/page.tsx          ├── hooks/useComprarAcceso.ts
-│   ├── curso/[slug]/VistaCurso.tsx    ├── hooks/useTransferirAcceso.ts
-│   ├── mi-acceso/page.tsx             ├── hooks/useLinajeAcceso.ts
-│   └── mi-acceso/ListaAccesos.tsx     │
-├── components/                        ├── services/content/types.ts
-│   ├── LogoQupuy.tsx                  ├── services/content/staticRepository.ts
-│   └── cursos/                        ├── services/content/index.ts
-│       ├── BotonDesbloquear.tsx       │
-│       ├── CadenaDemostrativa.tsx     ├── contracts/unlock/publicLockAbi.ts
-│       ├── CursoCard.tsx              ├── contracts/unlock/locks.ts
-│       ├── EstadoMembresia.tsx        │
-│       ├── LinajeAcceso.tsx           ├── utils/membresia.ts
-│       ├── ListaModulos.tsx           ├── types/curso.ts
-│       ├── ModalTransferir.tsx        └── data/cursos.ts
+├── app/                               ├── hooks/
+│   ├── page.tsx  (reescrito)          │   ├── useMembresia.ts
+│   ├── curso/[slug]/page.tsx          │   ├── useComprarAcceso.ts
+│   ├── curso/[slug]/VistaCurso.tsx    │   ├── useTransferirAcceso.ts
+│   ├── mi-acceso/page.tsx             │   ├── usePrestamos.ts
+│   ├── mi-acceso/ListaAccesos.tsx     │   ├── useLinajeAcceso.ts
+│   ├── recibir/page.tsx               │   ├── useAccesosDe.ts
+│   ├── recibir/PantallaRecibir.tsx    │   └── useRedDelLock.ts
+│   ├── debug/page.tsx  (reescrito)    │
+│   └── not-found.tsx  (reescrito)     ├── services/content/types.ts
+├── components/                        ├── services/content/staticRepository.ts
+│   ├── LogoQupuy.tsx                  ├── services/content/index.ts
+│   └── cursos/                        │
+│       ├── AvisoRed.tsx               ├── contracts/unlock/publicLockAbi.ts
+│       ├── BotonDesbloquear.tsx       ├── contracts/unlock/locks.ts
+│       ├── CadenaDemostrativa.tsx     ├── contracts/externalContracts.ts
+│       ├── CursoCard.tsx              │
+│       ├── EscanerDireccion.tsx       ├── utils/membresia.ts
+│       ├── EstadoMembresia.tsx        ├── types/curso.ts
+│       ├── LinajeAcceso.tsx           └── data/cursos.ts
+│       ├── ListaModulos.tsx
+│       ├── ModalTransferir.tsx
 │       ├── ReproductorVideo.tsx
-│       └── TarjetaAcceso.tsx
+│       ├── TarjetaAcceso.tsx
+│       └── TarjetaCompartir.tsx
 ```
 
 Más sus tests. Toda la lógica de negocio, el diseño del sistema y la interfaz

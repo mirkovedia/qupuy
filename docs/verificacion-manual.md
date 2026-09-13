@@ -98,13 +98,37 @@ El diferenciador del proyecto. **Wallet A → Wallet B.**
 
 | # | Comprobación | ✓/✗ |
 | - | ------------ | --- |
-| 31 | `yarn test` pasa (15/15) | ✓ |
+| 31 | `yarn test` pasa (19/19) | ✓ |
 | 32 | `yarn next:build` termina sin errores | ✓ |
 | 33 | `yarn lint` sin errores en código propio | ✓ |
 | 34 | El despliegue en Vercel reproduce los escenarios 1, 2, 9 y 21 | parcial: rutas y contenido verificados; falta probar compra en producción |
 | 35 | El README tiene las direcciones reales de los Locks | ✓ |
 | 36 | La declaración de código preexistente está completa | |
 | 37 | El video dura 3 minutos o menos | |
+
+---
+
+## Fase 6 — Añadido tras la auditoría del 13 de septiembre
+
+Préstamos, recepción en vivo, red no configurada y los estados que antes
+fallaban. **Wallet A** tiene el acceso; **wallet B** lo recibe.
+
+| # | Escenario | Resultado esperado | ✓/✗ |
+| - | --------- | ------------------ | --- |
+| 38 | En el modal, elegir **Prestar** y confirmar a la wallet B | Firma; "Acceso prestado. Puedes recuperarlo cuando quieras". La wallet A pierde el acceso sin recargar | simulado desde A |
+| 39 | Con la wallet B abrir el curso | Tiene acceso; el lateral dice "Es un préstamo · Te lo prestó 0x567…" y **no** aparece "Pasar mi acceso" | |
+| 40 | Con la wallet A abrir `/mi-acceso` | La tarjeta muestra "Prestado" con la dirección de B y el botón "Recuperar" | |
+| 41 | Pulsar "Recuperar" y confirmar | "Tu acceso volvió contigo"; A recupera el acceso y B lo pierde, sin recargar | |
+| 42 | Abrir `/recibir` con la wallet B en una ventana y pasarle un acceso desde A | La pantalla de B anuncia sola "¡Recibiste …!" en menos de cinco segundos | |
+| 43 | Tras pasar el acceso, mirar el badge de A **sin recargar** | "Sin acceso" — nunca "Tu acceso venció" | ✓ código |
+| 44 | Tras pasar el acceso, mirar la historia **sin recargar** | Aparece el nuevo paso y el titular cambia a "Ya circuló…" | ✓ código |
+| 45 | Poner la wallet en una red **no configurada** (Polygon, Base, Arbitrum) y abrir un curso | El botón de compra se sustituye por "Estás en otra red" con el cambio; nunca llega a pedir firma | ✓ código |
+| 46 | Abrir el modal de pasar acceso con la wallet en otra red | El botón de confirmar está deshabilitado y el aviso de red aparece dentro del modal | ✓ código |
+| 47 | Sin conexión al RPC (o con la clave compartida throttleada) abrir un curso | La historia muestra "No se pudo leer la historia" con "Reintentar"; no desaparece | ✓ código |
+| 48 | Conectar la wallet | El modal de RainbowKit es oscuro, con el acento rojo del tema | ✓ código |
+| 49 | Abrir en un teléfono | La cabecera muestra la marca "qupuy" | ✓ código |
+| 50 | Abrir `/ruta-inexistente` | Página 404 en español con enlace al catálogo | ✓ código |
+| 51 | En `/debug`, comparar `totalKeys`, `balanceOf` y `getHasValidKey` para 0x567… en LockIngles | `1`, `1`, `true` — y el texto explica que el acceso lo decide la tercera | ✓ en cadena |
 
 ---
 
@@ -135,6 +159,16 @@ escaneo de QR. Tras ella `getHasValidKey` devuelve `false` para el emisor y
 curso ya adquirido provocaba que la wallet estimara 21.000.000 de gas, por
 encima del tope de algunos RPC. Se corrigió simulando las transacciones antes
 de pedir la firma y fijando un techo de gas explícito.
+
+**Auditoría del 13 de septiembre (resuelto).** Cuatro cosas que no se veían
+en la lista anterior: (1) la afirmación "balanceOf cuenta keys vencidas" era
+falsa para PublicLock v14 —solo cuenta válidas; `totalKeys` cuenta todas— y el
+estado "vencido" era inalcanzable; (2) tras pasar el acceso, el emisor veía
+"Tu acceso venció" y la historia no se actualizaba hasta recargar, porque React
+Query conserva el dato de una consulta desactivada; (3) con la wallet en una
+red no configurada, la compra se firmaba en esa red con éxito falso; (4) el
+RPC público rechaza `eth_getLogs` y la historia dependía en silencio de la
+clave Alchemy compartida de Scaffold-ETH. Detalle en `CONTEXT.md` §6.
 
 ---
 

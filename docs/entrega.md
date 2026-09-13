@@ -62,15 +62,24 @@ segundo: el acceso cambió de dueño, y solo una persona lo tiene a la vez.
 | Otorgar acceso con membresía válida | Render condicional en `VistaCurso.tsx` |
 | Camino claro para comprar | `purchase()` en `hooks/useComprarAcceso.ts` |
 
-**Los tres puntos que conviene destacar:**
+**Los puntos que conviene destacar:**
 
-1. **`getHasValidKey`, nunca `balanceOf`.** `balanceOf` devuelve 1 aunque la
-   membresía esté vencida, porque el NFT permanece en la wallet. Solo
-   `getHasValidKey` comprueba la validez temporal dentro del contrato.
+1. **`getHasValidKey`, nunca `balanceOf`.** `getHasValidKey` es el contrato
+   explícito de "tiene acceso ahora" y ejecuta los hooks de validez del Lock.
+   `balanceOf` ha cambiado de semántica entre versiones del PublicLock —en la
+   v14 desplegada solo cuenta keys válidas; antes contaba todas—, así que
+   apoyar el acceso en ella acoplaría la app a la versión del contrato. Para
+   llegar al tokenId de una key vencida se usa `totalKeys`, y la renovación
+   llama a `extend` (Unlock rechaza `purchase` si ya posees una key).
+   Verificado contra el código fuente de `PublicLockV14.sol`.
 
-2. **El gating es real.** Sin membresía, las URLs de las clases de pago no
-   llegan al navegador: no se renderizan ni se ocultan con CSS, sencillamente
-   no existen en la página.
+2. **El gating está en el render.** Sin membresía válida, ningún reproductor
+   recibe una clase de pago y la lista no permite seleccionarlas; se recalcula
+   en cada render, así que si pasas tu acceso con el módulo 3 abierto, la vista
+   vuelve al gratuito al instante. Lo que **no** hace —y se dice en el README—
+   es impedir que las URLs viajen como datos de la página: la ruta de
+   producción son URLs firmadas emitidas por un endpoint que valida la
+   membresía del lado del servidor.
 
 3. **El linaje del acceso.** Qupuy lee los eventos `Transfer` del Lock para
    mostrar por cuántas manos ha pasado un curso. Ninguna plataforma puede hacer
@@ -79,7 +88,17 @@ segundo: el acceso cambió de dueño, y solo una persona lo tiene a la vez.
 4. **Pasar el acceso escaneando un código.** Pedirle a alguien que dicte su
    dirección rompe el caso real: dos personas que están juntas. El receptor
    abre `/recibir` y muestra un QR; quien pasa el acceso lo escanea desde el
-   modal. La transferencia verificada se hizo así.
+   modal. La transferencia verificada se hizo así. Y la pantalla del receptor
+   consulta el Lock cada tres segundos: anuncia sola el acceso en cuanto llega.
+
+5. **Prestar o regalar.** Unlock distingue las dos cosas y Qupuy las expone:
+   `transferFrom` regala (definitivo); `lendKey` presta (quien presta sigue
+   siendo el *key manager*, el receptor no puede pasarlo a nadie, y se recupera
+   con `unlendKey`). "Como se presta un libro" es una operación del contrato.
+
+6. **Un solo número para el pitch.** Cada Lock retiene el 98 % del precio: la
+   comisión de protocolo de Unlock es del 2 %. Hotmart cobra hasta un 9,9 % más
+   tarifa fija; Udemy, hasta un 63 % en ventas orgánicas.
 
 ---
 
@@ -89,16 +108,19 @@ segundo: el acceso cambió de dueño, y solo una persona lo tiene a la vez.
 | ------ | ----------- | --------- |
 | 0:00-0:25 | La portada | "Bolivia es el único país de Latinoamérica sin PayPal. MercadoPago tampoco opera aquí. Un profesor boliviano no tiene forma de cobrar por internet." |
 | 0:25-0:45 | El logo y la cadena de la portada | "Qupuy. En quechua significa dar a otro — y también pagar. Una sola palabra para las dos cosas que hace el producto." |
-| 0:45-1:15 | Entrar a un curso **sin wallet** | "Cualquiera ve la primera clase. Las demás están cerradas — y no ocultas con CSS: el video ni siquiera llega al navegador." |
-| 1:15-1:55 | Conectar wallet y comprar | "Compro la membresía… y el contenido aparece solo. No lo decide mi aplicación: lo decide el contrato de Unlock." |
-| 1:55-2:35 | **Pasar el acceso** a otra wallet | "Y aquí está lo que ninguna plataforma permite: le paso mi acceso a otra persona. Yo lo pierdo, ella lo gana. Solo uno a la vez." |
-| 2:35-3:00 | El linaje actualizado | "Y la cadena queda registrada. Udemy no sabe a quién le prestaste tu cuenta. Aquí es público y verificable. Cuando terminas, lo pasas." |
+| 0:45-1:10 | Entrar a un curso **sin wallet** | "Cualquiera ve la primera clase. Las demás están cerradas: sin membresía, el reproductor no recibe ninguna clase de pago. Lo decide el contrato, no mi aplicación." |
+| 1:10-1:45 | Conectar wallet y comprar | "Compro la membresía… y el contenido aparece solo. El Lock se queda con el 98 %: la comisión de Unlock es del 2 %." |
+| 1:45-2:30 | **Prestar el acceso**, con las dos pantallas a la vista | "Y aquí está lo que ninguna plataforma permite: se lo presto a otra persona. Escaneo su código… yo lo pierdo, ella lo gana — mira su pantalla: le acaba de llegar sola. Solo uno a la vez. Y como es un préstamo, ella no puede pasarlo, y yo lo recupero cuando quiera." |
+| 2:30-3:00 | El linaje actualizado | "Y la cadena queda registrada. Udemy no sabe a quién le prestaste tu cuenta. Aquí es público y verificable. Cuando terminas, lo pasas." |
 
 **Consejos de grabación:**
 
-- Ten **dos ventanas** listas: la app y MetaMask con las dos cuentas.
+- Ten **dos ventanas** listas: la app con tu wallet y `/recibir` con la otra
+  cuenta. La segunda pantalla anuncia sola el acceso cuando llega.
 - Compra el acceso **antes** de grabar, para no esperar la confirmación en vivo,
   o usa un segundo curso para la compra en directo.
+- **Prueba prestar y recuperar una vez antes de grabar**: son dos transacciones
+  reales en Sepolia y conviene tenerlas confirmadas.
 - Termina en el linaje: es el plano que se recuerda.
 
 ---
@@ -108,6 +130,11 @@ segundo: el acceso cambió de dueño, y solo una persona lo tiene a la vez.
 - [x] Ejecutar una transferencia real — bloque 11694004, hash arriba
 - [x] Comprobar que el repositorio es público
 - [x] Locks desplegados y verificados en Sepolia
+- [ ] Poner una clave propia de Alchemy en Vercel (`NEXT_PUBLIC_ALCHEMY_API_KEY`):
+      el RPC público rechaza `eth_getLogs` y el linaje depende de la clave
+      compartida de Scaffold-ETH
+- [ ] Prestar y recuperar un acceso en Sepolia (dos transacciones) y anotar
+      los hashes aquí
 - [ ] Grabar el video (≤ 3 minutos)
 - [ ] Revisar que la URL carga desde otro dispositivo
 - [ ] Copiar la declaración de código preexistente del README

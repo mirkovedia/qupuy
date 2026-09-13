@@ -4,8 +4,8 @@
 > Claude Code y Codex DEBEN leerlo al iniciar sesión y actualizarlo antes de terminar.
 > El código dice *qué* existe; este archivo dice *por qué*, *qué falta* y *quién lo tocó último*.
 
-**Última actualización:** 2026-09-11 — por: Claude Code
-**Fase actual:** 🔴 **HACKATHON EN CURSO** — arrancó 2026-09-11, 48h
+**Última actualización:** 2026-09-13 — por: Claude Code (Fable)
+**Fase actual:** 🟠 **CIERRE** — producto completo y desplegado; falta el video
 
 ---
 
@@ -46,17 +46,21 @@ Unlock transferible: "el curso que se puede prestar".
 
 ### Contratos
 
-| Contrato | Propósito | Estado |
-| -------- | --------- | ------ |
-| `YourContract.sol` | Ejemplo por defecto de SE-2 | Sin tocar — reemplazar cuando haya proyecto |
+**Cero Solidity propio.** Tres `PublicLock` **v14** de Unlock desplegados en
+Sepolia desde el dashboard (direcciones en `README.md` y `docs/entrega.md`;
+en el código, por variables de entorno). El paquete `packages/hardhat` quedó
+vestigial: sin contratos, deploy ni tests.
 
 ### Páginas del frontend
 
 | Ruta | Propósito | Estado |
 | ---- | --------- | ------ |
-| `/` | Home por defecto de SE-2 | Sin tocar |
-| `/debug` | Debug Contracts (autogenerado) | ✅ Funcional — no editar |
-| `/blockexplorer` | Explorador local | ✅ Funcional — no editar |
+| `/` | Portada, cadena demostrativa y catálogo | ✅ |
+| `/curso/[slug]` | Gating, compra/renovación, prestar/regalar, linaje | ✅ |
+| `/mi-acceso` | Accesos propios, préstamos hechos y su recuperación | ✅ |
+| `/recibir` | QR del receptor; anuncia sola el acceso cuando llega | ✅ |
+| `/debug` | Verificación pública de los Locks (copia propia, SE-2 debajo) | ✅ |
+| `/blockexplorer` | Explorador local de SE-2 | Sin tocar |
 
 ---
 
@@ -116,10 +120,13 @@ publicar el repositorio.**
 
 ### Lo que ya funciona
 
-- Base SE-2 intacta: Hardhat + Next.js App Router + RainbowKit + Wagmi + Viem + DaisyUI.
-- 8 skills en `.agents/skills/`, con wrappers en `.claude/skills/` para Claude Code.
-- Agente `grumpy-carlos-code-reviewer` disponible en los 4 harnesses.
-- Sistema de contexto multi-IA montado: este archivo + protocolo en `AGENTS.md`.
+- Producto completo en https://qupuy.vercel.app sobre Sepolia: catálogo,
+  vista previa, compra, renovación (`extend`), regalar (`transferFrom`),
+  prestar y recuperar (`lendKey`/`unlendKey`), linaje desde eventos, QR para
+  recibir con pantalla que reacciona sola.
+- Compra y transferencia reales verificadas en cadena (hashes en `docs/entrega.md`).
+- `yarn check-types`, `yarn lint`, `yarn test` (19) y `yarn build` en verde.
+- Auditoría del 2026-09-13 aplicada: ver §6 (filas del 13) y el handoff §7.
 
 ### Lo que está a medias
 
@@ -129,10 +136,13 @@ _(nada en curso)_
 
 | # | Pendiente | Urgencia |
 | - | --------- | -------- |
-| 1 | **Tracks sin anunciar** | Bloquea la definición del proyecto. Mientras tanto → ejecutar §8 |
-| 2 | **Checklist hora cero sin ejecutar** | 🔴 **AHORA.** Ver §8 — hacerlo antes de que salgan los tracks |
-| 3 | ~~Repo sin git~~ | ✅ Resuelto — github.com/mirkovedia/qupuy |
-| 4 | **Locks sin desplegar** | 🔴 Alta — Tarea 11, única dependencia externa. Arrancar en paralelo |
+| 1 | ~~Tracks sin anunciar~~ | ✅ Unlock Bounty 2 |
+| 2 | ~~Checklist hora cero~~ | ✅ |
+| 3 | ~~Repo sin git~~ | ✅ github.com/mirkovedia/qupuy |
+| 4 | ~~Locks sin desplegar~~ | ✅ Tres PublicLock v14 en Sepolia |
+| 5 | **Clave Alchemy propia en Vercel** (`NEXT_PUBLIC_ALCHEMY_API_KEY`) | 🔴 El RPC público rechaza `eth_getLogs`; hoy el linaje vive de la clave compartida de SE-2 |
+| 6 | **Probar prestar + recuperar en Sepolia** (2 tx desde la wallet del dev) | 🔴 Antes de grabar. Simulado OK desde su cuenta; falta la firma |
+| 7 | **Grabar el video ≤ 3 min** | 🔴 Único entregable pendiente. Guion en `docs/entrega.md` |
 
 ---
 
@@ -201,6 +211,15 @@ función del Lock sin UI propia. Es la red de seguridad.
 | 2026-09-11 | Capa de datos tras interfaz `ContentRepository` | "Stack profesional y escalable": migrar a base de datos es sustituir un módulo, no reescribir la app | Dev + Claude Code |
 | 2026-09-11 | Sin tests automatizados de UI; lista de verificación manual | No aportan a la rúbrica en el tiempo disponible. Los escenarios críticos quedan documentados en el spec §12 | Claude Code |
 | 2026-09-11 | Nombre del proyecto: **Qupuy** | Quechua para "dar a otro / pagar" — cubre las dos acciones del producto en una palabra. Verificado libre de colisiones (PassOn, PassIt, Handoff, Keyring, Wayki, Muyu estaban todos ocupados) | Dev + Claude Code |
+| 2026-09-12 | Red final: **Sepolia** (no Base Sepolia) | Los faucets de Base Sepolia exigían saldo en mainnet; el faucet PoW de Sepolia no. Cambio de configuración, no de código | Dev + Claude Code |
+| 2026-09-13 | **[CORREGIDA la fila del 11]** El motivo de "`getHasValidKey`, nunca `balanceOf`" no es que `balanceOf` cuente keys vencidas | Verificado en `PublicLockV14.sol` (la versión desplegada): `balanceOf` recorre las keys y **solo cuenta las válidas**; `totalKeys` cuenta todas. La decisión se mantiene; el argumento es que `getHasValidKey` es el contrato explícito de "tiene acceso ahora", ejecuta los hooks de validez, y no depende de la versión. **No repetir la afirmación vieja ante el jurado** | Claude Code (Fable) |
+| 2026-09-13 | `totalKeys` para llegar al tokenId; `extend` para renovar | Con `balanceOf` el estado "vencido" era inalcanzable, y `purchase` con una key vencida revierte (`MAX_KEYS_REACHED`, comprobación en `_createOwnershipRecord` sobre `totalKeys`) | Claude Code (Fable) |
+| 2026-09-13 | Lecturas fijadas a la red del Lock (`useTargetNetwork`), escrituras con `chainId` explícito, botones condicionados a `useAccount().chain` | wagmi no sigue a la wallet en redes no configuradas: la app leía Sepolia pero firmaba donde estuviera la wallet, con éxito falso. Ahora wagmi rechaza la firma y la UI ofrece el cambio | Claude Code (Fable) |
+| 2026-09-13 | Datos derivados de consultas desactivadas se anulan explícitamente (`tokenId`, `expiracion`, `manager`) | React Query conserva el último dato al desactivar una consulta; tras pasar el acceso, el emisor veía "vencido" y la historia no se actualizaba | Claude Code (Fable) |
+| 2026-09-13 | Linaje y préstamos sobre `useQuery`, con estado de error visible e invalidación tras cada transacción | El `useEffect` anterior tragaba el error y la sección desaparecía sin aviso; el RPC público rechaza `eth_getLogs` y solo Alchemy responde | Claude Code (Fable) |
+| 2026-09-13 | **Prestar** (`lendKey`/`unlendKey`) además de regalar (`transferFrom`) | "Como se presta un libro" pasa a ser literal: quien presta sigue siendo key manager, el receptor no puede pasarlo, y se recupera. Función del protocolo que casi nadie usa; simulada OK desde la wallet del dev | Dev + Claude Code (Fable) |
+| 2026-09-13 | `/recibir` consulta `getHasValidKey` de los tres Locks cada 3 s (multicall) | La pantalla del receptor anuncia sola el acceso: en el video, las dos pantallas cambian a la vez | Claude Code (Fable) |
+| 2026-09-13 | README y entrega dicen exactamente qué hace el gating y qué no | La frase "las URLs nunca llegan al navegador" era falsa (viajan en el payload RSC) y contradecía la limitación conocida del mismo README | Claude Code (Fable) |
 
 ---
 
@@ -210,27 +229,31 @@ función del Lock sin UI propia. Es la red de seguridad.
 > esto es un relevo, no un log. Responde: qué hice / qué dejé a medias /
 > qué debería hacer el siguiente / qué NO tocar.
 
-**De:** Claude Code → **Para:** la siguiente sesión
-**Fecha:** 2026-09-11 — fase 1 cerrada (decisión y diseño)
+**De:** Claude Code (Fable) → **Para:** la siguiente sesión
+**Fecha:** 2026-09-13 — auditoría aplicada, producto cerrado
 
-- **Qué hice:** Cerré la fase de decisión. Track elegido (Unlock Bounty 2),
-  producto definido (**Qupuy**), investigación técnica de Unlock verificada
-  contra el código fuente (§11), spec completo aprobado y **plan de
-  implementación de 19 tareas** escrito.
-  - Spec: `docs/superpowers/specs/2026-09-11-portal-cursos-unlock-design.md`
-  - Plan: `docs/superpowers/plans/2026-09-11-qupuy.md`
-- **Qué dejé a medias:** Nada de código — todavía no se ha escrito ninguna línea.
-- **Qué debería hacer el siguiente (en este orden):**
-  1. **`git init` + primer commit.** El plan asume commits desde la Tarea 1 y el
-     repo aún no está bajo control de versiones.
-  2. **Tarea 11 en paralelo** (desplegar los 3 Locks en Base Sepolia). Es la
-     única con dependencia externa; conviene arrancarla ya.
-  3. Ejecutar el plan desde la Tarea 1.
+- **Qué hice:** Auditoría completa del código propio, verificada contra el
+  código fuente de `PublicLockV14.sol`, la fuente de wagmi 2.x, los RPC reales
+  y el estado on-chain de los tres Locks. Apliqué todos los hallazgos (§6,
+  filas del 13) y dos elevaciones: **prestar/recuperar** y **`/recibir` en
+  vivo**. Build, lint, tipos y 19 tests en verde; desplegado en Vercel.
+- **Qué dejé a medias:** Nada en código. Tres cosas que solo el dev puede hacer:
+  clave Alchemy propia en Vercel, una prueba real de prestar + recuperar
+  (firmada), y el video.
+- **Qué debería hacer el siguiente:** nada de funcionalidad nueva. Si el dev
+  pide algo, primero el video. Si hay tiempo después: URLs de clases servidas
+  por un route handler que consulte `getHasValidKey` (hoy viajan en el payload;
+  está documentado como limitación, no es un fallo del gating de render).
 - **Qué NO tocar:**
-  - `packages/nextjs/hooks/scaffold-eth/` y `packages/nextjs/components/scaffold-eth/` — core de SE-2.
-  - `packages/nextjs/contracts/deployedContracts.ts` — autogenerado.
-  - `.agents/skills/*/SKILL.md` sin actualizar su wrapper en `.claude/skills/`.
-- **Recordatorio crítico:** `getHasValidKey`, **nunca** `balanceOf`. Ver spec §6.
+  - `packages/nextjs/hooks/scaffold-eth/` y `components/scaffold-eth/` — core de SE-2.
+  - Las guardas `tokenId = poseeAlgunaKey ? … : undefined` en `useMembresia`:
+    parecen redundantes y no lo son (React Query conserva datos al desactivar).
+  - El `chainId` explícito en cada `writeContractAsync`: es lo que impide
+    firmar en la red equivocada.
+  - `["0x"]` como `_data` de `purchase`: un elemento por comprador, no anidado.
+- **Recordatorio crítico:** el motivo de `getHasValidKey` ya **no** es "balanceOf
+  cuenta vencidas" — eso es falso en v14. Leer la fila [CORREGIDA] de §6 antes
+  de hablar con el jurado.
 
 ---
 
