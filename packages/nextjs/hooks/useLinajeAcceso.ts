@@ -1,23 +1,15 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import type { Address } from "viem";
 import { useReadContract } from "wagmi";
 import { BLOQUE_DESPLIEGUE, resolverLock } from "~~/contracts/unlock/locks";
-import { DIRECCION_CERO, PUBLIC_LOCK_ABI } from "~~/contracts/unlock/publicLockAbi";
+import { PUBLIC_LOCK_ABI } from "~~/contracts/unlock/publicLockAbi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { leerTransferencias } from "~~/services/web3/clienteEventos";
+import { type PasoLinaje, registrosAPasos } from "~~/utils/linaje";
 import type { AllowedChainIds } from "~~/utils/scaffold-eth";
 
-export type PasoLinaje = {
-  /** De quién salió. `undefined` cuando es la compra original. */
-  de?: Address;
-  hacia: Address;
-  bloque: bigint;
-  hash: `0x${string}`;
-  /** true si es el minteo: alguien compró el acceso al creador. */
-  esCompra: boolean;
-};
+export type { PasoLinaje };
 
 export type Linaje = {
   pasos: PasoLinaje[];
@@ -81,16 +73,7 @@ export const useLinajeAcceso = (lockKey: string, tokenId?: bigint): Linaje => {
           tokenId === undefined ? undefined : { tokenId },
         );
 
-        return registros.map(r => {
-          const desde = r.args.from ?? DIRECCION_CERO;
-          return {
-            de: desde === DIRECCION_CERO ? undefined : desde,
-            hacia: r.args.to ?? DIRECCION_CERO,
-            bloque: r.blockNumber ?? 0n,
-            hash: r.transactionHash ?? "0x",
-            esCompra: desde === DIRECCION_CERO,
-          };
-        });
+        return registrosAPasos(registros);
       } catch (error) {
         // Un RPC que no soporta el rango devuelve error. Se registra y se
         // propaga: la interfaz lo muestra y ofrece reintentar, en lugar de

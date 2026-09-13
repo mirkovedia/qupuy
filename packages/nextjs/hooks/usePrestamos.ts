@@ -46,30 +46,35 @@ export const usePrestamos = (lockKey: string) => {
 
         const tokenIds = [...new Set(salidas.map(s => s.args.tokenId).filter((id): id is bigint => id !== undefined))];
 
+        // Una key quemada ya no tiene dueño y ownerOf revierte: se descarta esa
+        // key sin tirar la lista entera.
         const detalles = await Promise.all(
-          tokenIds.map(async tokenId => {
-            const [manager, dueno] = await Promise.all([
-              publicClient.readContract({
-                address: lockAddress,
-                abi: PUBLIC_LOCK_ABI,
-                functionName: "keyManagerOf",
-                args: [tokenId],
-              }),
-              publicClient.readContract({
-                address: lockAddress,
-                abi: PUBLIC_LOCK_ABI,
-                functionName: "ownerOf",
-                args: [tokenId],
-              }),
-            ]);
-            return { tokenId, manager, dueno };
+          tokenIds.map(async (tokenId): Promise<Prestamo | null> => {
+            try {
+              const [manager, dueno] = await Promise.all([
+                publicClient.readContract({
+                  address: lockAddress,
+                  abi: PUBLIC_LOCK_ABI,
+                  functionName: "keyManagerOf",
+                  args: [tokenId],
+                }),
+                publicClient.readContract({
+                  address: lockAddress,
+                  abi: PUBLIC_LOCK_ABI,
+                  functionName: "ownerOf",
+                  args: [tokenId],
+                }),
+              ]);
+              const yo = address.toLowerCase();
+              const esMiPrestamo = manager.toLowerCase() === yo && dueno.toLowerCase() !== yo;
+              return esMiPrestamo ? { tokenId, prestadoA: dueno } : null;
+            } catch {
+              return null;
+            }
           }),
         );
 
-        const yo = address.toLowerCase();
-        return detalles
-          .filter(d => d.manager.toLowerCase() === yo && d.dueno.toLowerCase() !== yo)
-          .map(d => ({ tokenId: d.tokenId, prestadoA: d.dueno }));
+        return detalles.filter((d): d is Prestamo => d !== null);
       } catch (error) {
         console.error("No se pudieron leer los préstamos", error);
         throw error;
