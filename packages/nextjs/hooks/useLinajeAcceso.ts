@@ -1,24 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { type Address, parseAbiItem } from "viem";
-import { useChainId, usePublicClient } from "wagmi";
-import { resolverLock } from "~~/contracts/unlock/locks";
-
-const DIRECCION_CERO = "0x0000000000000000000000000000000000000000" as Address;
-
-const EVENTO_TRANSFER = parseAbiItem(
-  "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
-);
-
-/**
- * Bloque aproximado en el que se desplegaron los Locks.
- *
- * Buscar desde el bloque cero hace que los nodos públicos rechacen la
- * petición: son millones de bloques que revisar. Partir del despliegue
- * reduce el rango a unos pocos miles.
- */
-const BLOQUE_DESPLIEGUE = 11690000n;
+import { useQuery } from "@tanstack/react-query";
+import type { Address } from "viem";
+import { usePublicClient, useReadContract } from "wagmi";
+import { BLOQUE_DESPLIEGUE, resolverLock } from "~~/contracts/unlock/locks";
+import { DIRECCION_CERO, EVENTO_TRANSFER, PUBLIC_LOCK_ABI } from "~~/contracts/unlock/publicLockAbi";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+import type { AllowedChainIds } from "~~/utils/scaffold-eth";
 
 export type PasoLinaje = {
   /** De quién salió. `undefined` cuando es la compra original. */
@@ -41,6 +29,9 @@ export type Linaje = {
   /** true cuando se muestra la actividad del curso, no la de un acceso concreto. */
   esDelCurso: boolean;
   isLoading: boolean;
+  /** true si la historia no se pudo leer. Los contadores del contrato siguen disponibles. */
+  hayError: boolean;
+  reintentar: () => void;
 };
 
 /**
@@ -57,25 +48,27 @@ export type Linaje = {
  *
  * Esto es lo que ninguna plataforma de cursos puede mostrar: Udemy no sabe a
  * quién le prestaste tu cuenta. Aquí la cadena completa está en la blockchain.
+ *
+ * La consulta vive en React Query: se invalida tras cada transacción, así
+ * que la historia se actualiza sola en cuanto un acceso cambia de manos.
  */
 export const useLinajeAcceso = (lockKey: string, tokenId?: bigint): Linaje => {
-  const chainId = useChainId();
-  const publicClient = usePublicClient();
+  const { targetNetwork } = useTargetNetwork();
+  const chainId = targetNetwork.id as AllowedChainIds;
+  const publicClient = usePublicClient({ chainId });
   const lockAddress = resolverLock(lockKey, chainId);
 
-  const [pasos, setPasos] = useState<PasoLinaje[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (!lockAddress || !publicClient) {
-      setPasos([]);
-      return;
-    }
-
-    let cancelado = false;
-    setIsLoading(true);
-
-    const leer = async () => {
+  const {
+    data: pasos = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["linaje", chainId, lockAddress, tokenId === undefined ? "curso" : tokenId.toString()],
+    enabled: Boolean(lockAddress && publicClient),
+    retry: 1,
+    queryFn: async (): Promise<PasoLinaje[]> => {
+      if (!lockAddress || !publicClient) return [];
       try {
         const registros = await publicClient.getLogs({
           address: lockAddress,
@@ -86,9 +79,7 @@ export const useLinajeAcceso = (lockKey: string, tokenId?: bigint): Linaje => {
           toBlock: "latest",
         });
 
-        if (cancelado) return;
-
-        const historia: PasoLinaje[] = registros.map(r => {
+        return registros.map(r => {
           const desde = r.args.from ?? DIRECCION_CERO;
           return {
             de: desde === DIRECCION_CERO ? undefined : desde,
@@ -98,26 +89,41 @@ export const useLinajeAcceso = (lockKey: string, tokenId?: bigint): Linaje => {
             esCompra: desde === DIRECCION_CERO,
           };
         });
-
-        setPasos(historia);
-      } catch {
-        // Un RPC que no soporta rangos amplios devuelve error: el linaje
-        // simplemente no se muestra, sin romper la página.
-        if (!cancelado) setPasos([]);
-      } finally {
-        if (!cancelado) setIsLoading(false);
+      } catch (error) {
+        // Un RPC que no soporta el rango devuelve error. Se registra y se
+        // propaga: la interfaz lo muestra y ofrece reintentar, en lugar de
+        // hacer desaparecer la sección sin explicación.
+        console.error("No se pudo leer la historia del acceso", error);
+        throw error;
       }
-    };
+    },
+  });
 
-    void leer();
-    return () => {
-      cancelado = true;
-    };
-  }, [lockAddress, publicClient, tokenId]);
+  // El número de accesos vendidos también vive en el contrato: si los
+  // eventos no se pudieron leer, el dato principal sigue estando.
+  const { data: totalSupply } = useReadContract({
+    address: lockAddress,
+    abi: PUBLIC_LOCK_ABI,
+    functionName: "totalSupply",
+    chainId,
+    query: { enabled: Boolean(lockAddress) && tokenId === undefined },
+  });
 
   const vecesPasado = pasos.filter(p => !p.esCompra).length;
-  const compras = pasos.filter(p => p.esCompra).length;
+  const comprasEnEventos = pasos.filter(p => p.esCompra).length;
+  const compras = comprasEnEventos > 0 ? comprasEnEventos : Number(totalSupply ?? 0n);
   const personas = new Set(pasos.map(p => p.hacia.toLowerCase())).size;
 
-  return { pasos, vecesPasado, compras, personas, esDelCurso: tokenId === undefined, isLoading };
+  return {
+    pasos,
+    vecesPasado,
+    compras,
+    personas,
+    esDelCurso: tokenId === undefined,
+    isLoading,
+    hayError: isError,
+    reintentar: () => {
+      void refetch();
+    },
+  };
 };

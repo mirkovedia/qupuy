@@ -23,13 +23,42 @@ type Props = {
  */
 export const LinajeAcceso = ({ lockKey, tokenId, titulo, creador }: Props) => {
   const { address } = useAccount();
-  const { pasos, vecesPasado, compras, personas, esDelCurso, isLoading } = useLinajeAcceso(lockKey, tokenId);
+  const { pasos, vecesPasado, compras, personas, esDelCurso, isLoading, hayError, reintentar } = useLinajeAcceso(
+    lockKey,
+    tokenId,
+  );
+
+  const encabezado = esDelCurso ? "Actividad del curso" : "Historia de este acceso";
 
   if (isLoading) {
     return (
       <div className="border border-base-content/10 bg-base-100 p-5">
         <div className="skeleton h-4 w-40 mb-4" />
         <div className="skeleton h-12 w-full" />
+      </div>
+    );
+  }
+
+  // Si el nodo no pudo devolver los eventos, se dice: la sección
+  // diferenciadora no puede desaparecer sin explicación.
+  if (hayError) {
+    return (
+      <div className="border border-base-content/10 bg-base-100 overflow-hidden">
+        <div className="aguayo aguayo-apagado" />
+        <div className="p-5">
+          <h3 className="text-xs uppercase tracking-[0.14em] text-base-content/50 m-0 mb-4">{encabezado}</h3>
+          {esDelCurso && compras > 0 && (
+            <p className="font-display text-2xl leading-tight m-0 mb-3">
+              {compras} {compras === 1 ? "acceso vendido" : "accesos vendidos"}
+            </p>
+          )}
+          <p className="text-sm text-base-content/60 leading-relaxed m-0 mb-4">
+            No se pudo leer la historia desde la blockchain en este momento.
+          </p>
+          <button type="button" className="btn btn-sm btn-outline w-full" onClick={reintentar}>
+            Reintentar
+          </button>
+        </div>
       </div>
     );
   }
@@ -63,9 +92,7 @@ export const LinajeAcceso = ({ lockKey, tokenId, titulo, creador }: Props) => {
 
       <div className="p-5">
         <div className="flex items-baseline justify-between mb-5">
-          <h3 className="text-xs uppercase tracking-[0.14em] text-base-content/50 m-0">
-            {esDelCurso ? "Actividad del curso" : "Historia de este acceso"}
-          </h3>
+          <h3 className="text-xs uppercase tracking-[0.14em] text-base-content/50 m-0">{encabezado}</h3>
           <span className="dato text-base-content/40">
             {personas} {personas === 1 ? "persona" : "personas"}
           </span>
