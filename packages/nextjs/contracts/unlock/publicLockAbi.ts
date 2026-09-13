@@ -176,6 +176,16 @@ export const PUBLIC_LOCK_ABI = [
     type: "function",
   },
 
+  {
+    // Destruye una key. No la usa la aplicación: está para limpiar keys de
+    // prueba desde /debug (la puede llamar el dueño, el key manager o el lock manager).
+    inputs: [{ internalType: "uint256", name: "_tokenId", type: "uint256" }],
+    name: "burn",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+
   // ── Errores ──────────────────────────────────────────────────────────────
   // Declarados para que viem los decodifique: sin ellos, cualquier rechazo
   // del contrato llega como un "execution reverted" sin explicación.
