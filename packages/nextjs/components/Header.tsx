@@ -29,7 +29,7 @@ export const menuLinks: HeaderMenuLink[] = [
     href: "/recibir",
   },
   {
-    label: "Debug Contracts",
+    label: "Verificar",
     href: "/debug",
     icon: <BugAntIcon className="h-4 w-4" />,
   },

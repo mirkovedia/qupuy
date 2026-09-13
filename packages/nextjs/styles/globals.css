@@ -212,3 +212,60 @@
   font-size: 0.8125rem;
   letter-spacing: -0.01em;
 }
+
+/*
+  Página /debug — herramienta de Scaffold-ETH 2.
+
+  El paquete `@scaffold-ui/debug-contracts` trae su hoja de estilos con los
+  colores del tema original quemados: azules claros sobre blanco, que sobre el
+  fondo de tierra de Qupuy se ven como un parche.
+
+  No se puede editar el paquete, así que sus clases se redefinen aquí con la
+  paleta del proyecto. La página sigue siendo la de SE-2; solo deja de romper
+  la estética cuando se muestra en la demo.
+*/
+.bg-sui-base-100 {
+  background-color: var(--color-base-100);
+}
+
+.bg-sui-primary {
+  background-color: var(--color-base-300);
+}
+
+.bg-sui-primary-neutral,
+.bg-sui-primary-subtle {
+  background-color: var(--color-base-200);
+}
+
+.border-sui-primary-subtle,
+.border-sui-primary-subtle\/70,
+.border-sui-primary-subtle\/80 {
+  border-color: color-mix(in srgb, var(--color-base-content) 15%, transparent);
+}
+
+.text-sui-primary,
+.text-sui-primary-content {
+  color: var(--color-base-content);
+}
+
+.text-sui-primary-content\/80 {
+  color: color-mix(in srgb, var(--color-base-content) 80%, transparent);
+}
+
+.text-sui-primary-content\/60 {
+  color: color-mix(in srgb, var(--color-base-content) 60%, transparent);
+}
+
+.text-sui-primary-content\/50 {
+  color: color-mix(in srgb, var(--color-base-content) 50%, transparent);
+}
+
+.text-sui-accent {
+  color: var(--color-chicha);
+}
+
+.shadow-sui-primary,
+.shadow-sui-primary-subtle {
+  --tw-shadow-color: transparent;
+  box-shadow: none;
+}
