@@ -21,3 +21,6 @@ node_modules
 
 # cli
 dist
+
+# Archivos de bloqueo de Office (Word/PowerPoint abiertos)
+~$*
