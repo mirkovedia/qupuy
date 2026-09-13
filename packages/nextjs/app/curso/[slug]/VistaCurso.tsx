@@ -63,7 +63,6 @@ export const VistaCurso = ({ curso }: Props) => {
             src={moduloReproducible.videoUrl}
             titulo={moduloReproducible.titulo}
             esVistaPrevia={!tieneAcceso}
-            diapositivas={moduloReproducible.diapositivas ?? 0}
           />
           <p className="text-base-content/70 leading-relaxed mt-8">{curso.descripcion}</p>
         </div>
