@@ -98,7 +98,7 @@ El diferenciador del proyecto. **Wallet A → Wallet B.**
 
 | # | Comprobación | ✓/✗ |
 | - | ------------ | --- |
-| 31 | `yarn test` pasa (19/19) | ✓ |
+| 31 | `yarn test` pasa (22/22) | ✓ |
 | 32 | `yarn next:build` termina sin errores | ✓ |
 | 33 | `yarn lint` sin errores en código propio | ✓ |
 | 34 | El despliegue en Vercel reproduce los escenarios 1, 2, 9 y 21 | parcial: rutas y contenido verificados; falta probar compra en producción |
@@ -129,6 +129,9 @@ fallaban. **Wallet A** tiene el acceso; **wallet B** lo recibe.
 | 49 | Abrir en un teléfono | La cabecera muestra la marca "qupuy" | ✓ código |
 | 50 | Abrir `/ruta-inexistente` | Página 404 en español con enlace al catálogo | ✓ código |
 | 51 | En `/debug`, comparar `totalKeys`, `balanceOf` y `getHasValidKey` para 0x567… en LockIngles | `1`, `1`, `true` — y el texto explica que el acceso lo decide la tercera | ✓ en cadena |
+| 52 | Ver el código fuente de `/curso/ingles-basico` **sin wallet** y buscar `ingles-02.mp4` | No aparece: solo `ingles-01.mp4`, la clase gratuita | |
+| 53 | `GET /api/clase/1-2?address=<wallet sin membresía>` | `403` con `code: "NO_ACCESS"`; con una wallet con membresía, `{ videoUrl }` | |
+| 54 | Con acceso, cambiar de clase | El reproductor muestra un instante de carga y luego la clase; si el servidor falla, "No se pudo obtener esta clase" con "Reintentar" | |
 
 ---
 

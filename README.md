@@ -111,7 +111,7 @@ Todo lo de abajo está verificado contra el código fuente de esa versión.
 
 | Función | Para qué | Dónde |
 | ------- | -------- | ----- |
-| `getHasValidKey(address)` | **Determinar el acceso** | `hooks/useMembresia.ts` |
+| `getHasValidKey(address)` | **Determinar el acceso**, en el cliente y en el servidor | `hooks/useMembresia.ts`, `app/api/clase/[moduloId]/route.ts` |
 | `totalKeys(address)` | Saber si posee alguna membresía, vigente o vencida, para llegar a su tokenId | `hooks/useMembresia.ts` |
 | `tokenOfOwnerByIndex(address, 0)` | Obtener el tokenId del usuario | `hooks/useMembresia.ts` |
 | `keyExpirationTimestampFor(tokenId)` | Días restantes | `hooks/useMembresia.ts` |
@@ -151,21 +151,25 @@ su `tokenId`, Qupuy usa `totalKeys`, que cuenta todas. Así el estado "vencido"
 existe de verdad, y la renovación llama a `extend`: Unlock rechaza un
 `purchase` cuando ya posees una key, aunque esté vencida (`MAX_KEYS_REACHED`).
 
-### El gating está en el render
+### El gating: en el render y en el servidor
 
 ```typescript
 // app/curso/[slug]/VistaCurso.tsx
 const moduloReproducible = tieneAcceso ? moduloActivo : moduloGratuito;
 ```
 
-Sin membresía válida, ningún reproductor recibe la URL de una clase de pago,
-la lista deshabilita sus botones y ninguna interacción puede seleccionarlas.
-La expresión se recalcula en cada render, lo que la hace correcta también en el
+Sin membresía válida, ningún reproductor recibe una clase de pago, la lista
+deshabilita sus botones y ninguna interacción puede seleccionarlas. La
+expresión se recalcula en cada render, lo que la hace correcta también en el
 caso difícil: si un usuario con acceso selecciona el módulo 3 y luego pasa su
 membresía, la vista vuelve al módulo gratuito de inmediato.
 
-Lo que este gating **no** hace: impedir que las URLs viajen al navegador como
-datos de la página. Ver *Limitación conocida*.
+Y las URLs de las clases de pago **no viajan en la página**. El Server
+Component las quita antes de pasar el curso al cliente
+(`services/content/publico.ts`); cuando el contrato dice que hay acceso, el
+cliente las pide a `/api/clase/[id]`, que consulta `getHasValidKey` en el Lock
+desde el servidor antes de responder. Abrir el código fuente de un curso sin
+membresía no revela ninguna clase de pago.
 
 ### Prestar o regalar
 
@@ -268,7 +272,7 @@ Sepolia ([faucet de prueba de trabajo](https://sepolia-faucet.pk910.de/)).
 
 ```bash
 yarn start          # servidor de desarrollo
-yarn test           # tests de lógica (19)
+yarn test           # tests de lógica (22)
 yarn next:build     # build de producción
 yarn lint           # lint
 ```
@@ -302,9 +306,9 @@ datos es reemplazar una implementación, no reescribir la aplicación.
 usuario final de Qupuy es un profesor boliviano o su alumno; la tecnología está
 debajo, no delante.
 
-**Los tests cubren la lógica pura, no la UI.** Diecinueve tests sobre el
-cálculo de expiración, la lectura y resolución de Locks y el repositorio de
-contenido — donde los bugs son silenciosos. La interfaz se verifica manualmente
+**Los tests cubren la lógica pura, no la UI.** Veintidós tests sobre el
+cálculo de expiración, la lectura y resolución de Locks, el repositorio de
+contenido y el filtrado de clases de pago — donde los bugs son silenciosos. La interfaz se verifica manualmente
 contra una lista de escenarios documentada.
 
 **Las lecturas van siempre a la red del Lock; las escrituras exigen la wallet
@@ -317,14 +321,13 @@ de enviarla donde esté.
 
 ## Limitación conocida
 
-Las URLs de los videos son datos de la página: viajan al navegador aunque la
-membresía no exista, y son descubribles con las herramientas de desarrollo. El
-gating decide qué se reproduce, no qué se puede descargar.
+El endpoint que entrega las clases confía en la dirección que se le indica: no
+pide una firma. Alguien que conozca la dirección de un alumno con membresía
+podría pedir las URLs en su nombre. Y los archivos de video son estáticos: quien
+conozca una ruta puede descargarla.
 
-Es aceptable en una demo con archivos estáticos. La ruta de producción son URLs
-firmadas con expiración corta, emitidas por un endpoint que valida la membresía
-con `getHasValidKey` del lado del servidor —con la wallet autenticada por firma
-(SIWE)— antes de entregarlas.
+Es aceptable en una demo. La ruta de producción es autenticar la wallet por
+firma (SIWE) y responder con URLs firmadas de expiración corta.
 
 Se documenta aquí porque un jurado técnico lo notaría, y ocultarlo sería peor
 que reconocerlo.
@@ -361,12 +364,14 @@ packages/nextjs/
 │   ├── mi-acceso/page.tsx             │   ├── usePrestamos.ts
 │   ├── mi-acceso/ListaAccesos.tsx     │   ├── useLinajeAcceso.ts
 │   ├── recibir/page.tsx               │   ├── useAccesosDe.ts
-│   ├── recibir/PantallaRecibir.tsx    │   └── useRedDelLock.ts
+│   ├── recibir/PantallaRecibir.tsx    │   ├── useUrlDeClase.ts
+│   ├── api/clase/[moduloId]/route.ts  │   └── useRedDelLock.ts
 │   ├── debug/page.tsx  (reescrito)    │
 │   └── not-found.tsx  (reescrito)     ├── services/content/types.ts
 ├── components/                        ├── services/content/staticRepository.ts
-│   ├── LogoQupuy.tsx                  ├── services/content/index.ts
-│   └── cursos/                        │
+│   ├── LogoQupuy.tsx                  ├── services/content/publico.ts
+│   └── cursos/                        ├── services/content/index.ts
+│       │                              ├── services/web3/clienteServidor.ts
 │       ├── AvisoRed.tsx               ├── contracts/unlock/publicLockAbi.ts
 │       ├── BotonDesbloquear.tsx       ├── contracts/unlock/locks.ts
 │       ├── CadenaDemostrativa.tsx     ├── contracts/externalContracts.ts

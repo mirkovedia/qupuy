@@ -73,13 +73,14 @@ segundo: el acceso cambió de dueño, y solo una persona lo tiene a la vez.
    llama a `extend` (Unlock rechaza `purchase` si ya posees una key).
    Verificado contra el código fuente de `PublicLockV14.sol`.
 
-2. **El gating está en el render.** Sin membresía válida, ningún reproductor
-   recibe una clase de pago y la lista no permite seleccionarlas; se recalcula
-   en cada render, así que si pasas tu acceso con el módulo 3 abierto, la vista
-   vuelve al gratuito al instante. Lo que **no** hace —y se dice en el README—
-   es impedir que las URLs viajen como datos de la página: la ruta de
-   producción son URLs firmadas emitidas por un endpoint que valida la
-   membresía del lado del servidor.
+2. **El gating está en el render y en el servidor.** Sin membresía válida,
+   ningún reproductor recibe una clase de pago y la lista no permite
+   seleccionarlas; se recalcula en cada render, así que si pasas tu acceso con
+   el módulo 3 abierto, la vista vuelve al gratuito al instante. Y las URLs de
+   pago **no viajan en la página**: el servidor las quita, y `/api/clase/[id]`
+   las entrega solo después de consultar `getHasValidKey` en el Lock. La
+   limitación está declarada en el README: el endpoint confía en la dirección
+   (sin SIWE) y los archivos son estáticos.
 
 3. **El linaje del acceso.** Qupuy lee los eventos `Transfer` del Lock para
    mostrar por cuántas manos ha pasado un curso. Ninguna plataforma puede hacer
@@ -108,7 +109,7 @@ segundo: el acceso cambió de dueño, y solo una persona lo tiene a la vez.
 | ------ | ----------- | --------- |
 | 0:00-0:25 | La portada | "Bolivia es el único país de Latinoamérica sin PayPal. MercadoPago tampoco opera aquí. Un profesor boliviano no tiene forma de cobrar por internet." |
 | 0:25-0:45 | El logo y la cadena de la portada | "Qupuy. En quechua significa dar a otro — y también pagar. Una sola palabra para las dos cosas que hace el producto." |
-| 0:45-1:10 | Entrar a un curso **sin wallet** | "Cualquiera ve la primera clase. Las demás están cerradas: sin membresía, el reproductor no recibe ninguna clase de pago. Lo decide el contrato, no mi aplicación." |
+| 0:45-1:10 | Entrar a un curso **sin wallet** | "Cualquiera ve la primera clase. Las demás están cerradas — y las URLs de pago ni siquiera viajan en la página: el servidor las entrega solo cuando el contrato dice que tienes acceso. Lo decide Unlock, no mi aplicación." |
 | 1:10-1:45 | Conectar wallet y comprar | "Compro la membresía… y el contenido aparece solo. El Lock se queda con el 98 %: la comisión de Unlock es del 2 %." |
 | 1:45-2:30 | **Prestar el acceso**, con las dos pantallas a la vista | "Y aquí está lo que ninguna plataforma permite: se lo presto a otra persona. Escaneo su código… yo lo pierdo, ella lo gana — mira su pantalla: le acaba de llegar sola. Solo uno a la vez. Y como es un préstamo, ella no puede pasarlo, y yo lo recupero cuando quiera." |
 | 2:30-3:00 | El linaje actualizado | "Y la cadena queda registrada. Udemy no sabe a quién le prestaste tu cuenta. Aquí es público y verificable. Cuando terminas, lo pasas." |

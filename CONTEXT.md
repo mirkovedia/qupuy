@@ -220,6 +220,7 @@ función del Lock sin UI propia. Es la red de seguridad.
 | 2026-09-13 | **Prestar** (`lendKey`/`unlendKey`) además de regalar (`transferFrom`) | "Como se presta un libro" pasa a ser literal: quien presta sigue siendo key manager, el receptor no puede pasarlo, y se recupera. Función del protocolo que casi nadie usa; simulada OK desde la wallet del dev | Dev + Claude Code (Fable) |
 | 2026-09-13 | `/recibir` consulta `getHasValidKey` de los tres Locks cada 3 s (multicall) | La pantalla del receptor anuncia sola el acceso: en el video, las dos pantallas cambian a la vez | Claude Code (Fable) |
 | 2026-09-13 | README y entrega dicen exactamente qué hace el gating y qué no | La frase "las URLs nunca llegan al navegador" era falsa (viajan en el payload RSC) y contradecía la limitación conocida del mismo README | Claude Code (Fable) |
+| 2026-09-13 | Las clases de pago se quitan en el servidor (`ocultarClasesDePago`) y las entrega `/api/clase/[id]` tras consultar `getHasValidKey` con un cliente viem de servidor | Convierte la afirmación anterior en verdad medible: `curl` de la página sin wallet ya no contiene ninguna URL de pago. Sin SIWE el endpoint confía en la dirección: limitación declarada, no ocultada | Claude Code (Fable) |
 
 ---
 
@@ -241,9 +242,9 @@ función del Lock sin UI propia. Es la red de seguridad.
   clave Alchemy propia en Vercel, una prueba real de prestar + recuperar
   (firmada), y el video.
 - **Qué debería hacer el siguiente:** nada de funcionalidad nueva. Si el dev
-  pide algo, primero el video. Si hay tiempo después: URLs de clases servidas
-  por un route handler que consulte `getHasValidKey` (hoy viajan en el payload;
-  está documentado como limitación, no es un fallo del gating de render).
+  pide algo, primero el video. Lo único que queda como limitación declarada es
+  que `/api/clase/[id]` confía en la dirección sin firma (SIWE) y que los
+  videos son archivos estáticos; ambas cosas están en el README.
 - **Qué NO tocar:**
   - `packages/nextjs/hooks/scaffold-eth/` y `components/scaffold-eth/` — core de SE-2.
   - Las guardas `tokenId = poseeAlgunaKey ? … : undefined` en `useMembresia`:
