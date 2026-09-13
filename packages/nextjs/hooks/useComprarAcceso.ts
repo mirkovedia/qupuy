@@ -9,6 +9,14 @@ import { getParsedError, notification } from "~~/utils/scaffold-eth";
 const DIRECCION_CERO = "0x0000000000000000000000000000000000000000" as Address;
 
 /**
+ * Techo de gas para `purchase`.
+ *
+ * Una compra en Unlock consume del orden de 300.000; se deja margen holgado
+ * sin acercarse al límite que aceptan los RPC públicos.
+ */
+const LIMITE_GAS_COMPRA = 600_000n;
+
+/**
  * Compra de una membresía en un Lock de Unlock.
  * Solo soporta Locks con precio en moneda nativa (ETH), que es la
  * configuración usada por Qupuy.
@@ -39,12 +47,25 @@ export const useComprarAcceso = (lockAddress: Address | undefined) => {
 
     setIsPending(true);
     try {
-      const hash = await writeContractAsync({
+      const argumentos = {
         address: lockAddress,
         abi: PUBLIC_LOCK_ABI,
         functionName: "purchase",
         args: [[precio], [address], [DIRECCION_CERO], [DIRECCION_CERO], ["0x" as `0x${string}`]] as const,
         value: precio,
+        account: address,
+      } as const;
+
+      // Simular antes de firmar: si el contrato va a rechazar la compra —por
+      // ejemplo, si ya tienes una membresía— el usuario lo sabe sin gastar gas
+      // ni recibir el error críptico del RPC.
+      await publicClient.simulateContract(argumentos);
+
+      const hash = await writeContractAsync({
+        ...argumentos,
+        // Sin este límite, una estimación fallida deja a la wallet cayendo a un
+        // valor por defecto tan alto que algunos RPC rechazan la transacción.
+        gas: LIMITE_GAS_COMPRA,
       });
 
       await publicClient.waitForTransactionReceipt({ hash });

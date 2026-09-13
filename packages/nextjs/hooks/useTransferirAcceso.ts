@@ -11,6 +11,15 @@ import { getParsedError, notification } from "~~/utils/scaffold-eth";
  * Transferencia de una membresía a otra wallet.
  * La Key es un ERC-721: al transferirla, el remitente pierde el acceso.
  */
+/**
+ * Techo de gas para `transferFrom`.
+ *
+ * Una transferencia ERC-721 consume del orden de 100.000; el margen evita que
+ * una estimación fallida dispare el límite por encima de lo que aceptan los
+ * RPC públicos.
+ */
+const LIMITE_GAS_TRANSFERENCIA = 300_000n;
+
 export const useTransferirAcceso = (lockAddress: Address | undefined, tokenId: bigint | undefined) => {
   const { address } = useAccount();
   const publicClient = usePublicClient();
@@ -40,11 +49,21 @@ export const useTransferirAcceso = (lockAddress: Address | undefined, tokenId: b
 
     setIsPending(true);
     try {
-      const hash = await writeContractAsync({
+      const argumentos = {
         address: lockAddress,
         abi: PUBLIC_LOCK_ABI,
         functionName: "transferFrom",
         args: [address, destino, tokenId],
+        account: address,
+      } as const;
+
+      // Simular antes de firmar: si el contrato va a rechazar la
+      // transferencia, el usuario lo sabe sin gastar gas.
+      await publicClient.simulateContract(argumentos);
+
+      const hash = await writeContractAsync({
+        ...argumentos,
+        gas: LIMITE_GAS_TRANSFERENCIA,
       });
 
       await publicClient.waitForTransactionReceipt({ hash });
