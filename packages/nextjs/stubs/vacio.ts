@@ -5,4 +5,6 @@
  * Qupuy no usa y no están instaladas. Ver la configuración de turbopack en
  * next.config.ts.
  */
-export default {};
+const moduloVacio = {};
+
+export default moduloVacio;

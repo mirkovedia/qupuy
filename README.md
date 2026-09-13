@@ -149,6 +149,30 @@ La expresión se recalcula en cada render, lo que la hace correcta también en e
 caso difícil: si un usuario con acceso selecciona el módulo 3 y luego transfiere
 su membresía, la vista vuelve al módulo gratuito de inmediato.
 
+### El linaje del acceso
+
+Cada transferencia emite un evento `Transfer` en el Lock. Qupuy los lee para
+reconstruir la historia completa de un acceso: quién lo compró y por qué manos
+ha pasado.
+
+```typescript
+// hooks/useLinajeAcceso.ts
+const registros = await publicClient.getLogs({
+  address: lockAddress,
+  event: EVENTO_TRANSFER,
+  args: { tokenId },
+  fromBlock: BLOQUE_DESPLIEGUE, // no "earliest": los nodos públicos lo rechazan
+});
+```
+
+En un ERC-721 el primer evento tiene `from = 0x0` — ese es el minteo, la compra
+original. Los siguientes son transferencias reales entre personas.
+
+**Esto es lo que ninguna plataforma de cursos puede mostrar.** Udemy no sabe a
+quién le prestaste tu cuenta, porque prestar allí significa compartir una
+contraseña y eso es invisible para la plataforma. Aquí cada paso es un evento
+público y verificable.
+
 ### Registro de Locks por red
 
 Las direcciones no están escritas en el código:
@@ -281,23 +305,33 @@ escribió durante la hackathon.
 - **Guías de patrones** incluidas en el repositorio base (`.agents/skills/`),
   usadas como referencia de implementación.
 - Dependencias estándar: wagmi, viem, RainbowKit, DaisyUI, Vitest.
+- **Material de video:** clips de [Mixkit](https://mixkit.co/), bajo su licencia
+  libre, que no exige atribución. Se usan como contenido de demostración de las
+  clases.
+- **Tipografías:** Fraunces, Inter y JetBrains Mono, todas de licencia abierta.
 
 **Escrito durante la hackathon:**
 
 ```
 packages/nextjs/
-├── app/curso/[slug]/page.tsx          ├── hooks/useMembresia.ts
-├── app/curso/[slug]/VistaCurso.tsx    ├── hooks/useComprarAcceso.ts
-├── components/cursos/ModalTransferir.tsx   ├── hooks/useTransferirAcceso.ts
-├── components/cursos/TarjetaAcceso.tsx    ├── app/mi-acceso/page.tsx
-├── app/mi-acceso/ListaAccesos.tsx
-├── app/page.tsx  (reescrito)          ├── services/content/types.ts
-├── components/cursos/BotonDesbloquear.tsx  ├── services/content/staticRepository.ts
-├── components/cursos/CursoCard.tsx    ├── services/content/index.ts
-├── components/cursos/EstadoMembresia.tsx   ├── contracts/unlock/publicLockAbi.ts
-├── components/cursos/ListaModulos.tsx ├── contracts/unlock/locks.ts
-├── components/cursos/ReproductorVideo.tsx  ├── utils/membresia.ts
-├── data/cursos.ts                     └── types/curso.ts
+├── app/
+│   ├── page.tsx  (reescrito)          ├── hooks/useMembresia.ts
+│   ├── curso/[slug]/page.tsx          ├── hooks/useComprarAcceso.ts
+│   ├── curso/[slug]/VistaCurso.tsx    ├── hooks/useTransferirAcceso.ts
+│   ├── mi-acceso/page.tsx             ├── hooks/useLinajeAcceso.ts
+│   └── mi-acceso/ListaAccesos.tsx     │
+├── components/                        ├── services/content/types.ts
+│   ├── LogoQupuy.tsx                  ├── services/content/staticRepository.ts
+│   └── cursos/                        ├── services/content/index.ts
+│       ├── BotonDesbloquear.tsx       │
+│       ├── CadenaDemostrativa.tsx     ├── contracts/unlock/publicLockAbi.ts
+│       ├── CursoCard.tsx              ├── contracts/unlock/locks.ts
+│       ├── EstadoMembresia.tsx        │
+│       ├── LinajeAcceso.tsx           ├── utils/membresia.ts
+│       ├── ListaModulos.tsx           ├── types/curso.ts
+│       ├── ModalTransferir.tsx        └── data/cursos.ts
+│       ├── ReproductorVideo.tsx
+│       └── TarjetaAcceso.tsx
 ```
 
 Más sus tests. Toda la lógica de negocio, el diseño del sistema y la interfaz
