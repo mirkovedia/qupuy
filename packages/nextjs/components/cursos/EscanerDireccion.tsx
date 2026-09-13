@@ -13,6 +13,9 @@ type DetectorCodigos = {
   detect: (fuente: CanvasImageSource) => Promise<{ rawValue: string }[]>;
 };
 
+/** Si el navegador puede leer códigos. Solo Chrome y derivados, a día de hoy. */
+export const puedeEscanear = () => typeof globalThis !== "undefined" && "BarcodeDetector" in globalThis;
+
 const crearDetector = (): DetectorCodigos | null => {
   const api = (globalThis as { BarcodeDetector?: new (opciones: { formats: string[] }) => DetectorCodigos })
     .BarcodeDetector;
@@ -38,7 +41,7 @@ export const EscanerDireccion = ({ onDireccion, onCerrar }: Props) => {
   useEffect(() => {
     const detector = crearDetector();
     if (!detector) {
-      setError("Tu navegador no puede leer códigos. Escribe la dirección a mano.");
+      setError("camara-no-soportada");
       return;
     }
 
@@ -70,7 +73,7 @@ export const EscanerDireccion = ({ onDireccion, onCerrar }: Props) => {
           }
         }, 350);
       } catch {
-        if (!cancelado) setError("No se pudo abrir la cámara. Revisa los permisos del navegador.");
+        if (!cancelado) setError("permiso-denegado");
       }
     };
 
@@ -96,7 +99,19 @@ export const EscanerDireccion = ({ onDireccion, onCerrar }: Props) => {
         </div>
 
         {error ? (
-          <p className="text-sm text-base-content/70 m-0">{error}</p>
+          <div>
+            <p className="text-sm text-base-content/70 m-0 mb-2">
+              {error === "camara-no-soportada"
+                ? "Este navegador no puede leer códigos. Chrome sí puede."
+                : "No se pudo abrir la cámara. Revisa los permisos del navegador."}
+            </p>
+            <p className="text-sm text-base-content/55 m-0 mb-4">
+              También puedes pedirle su dirección y pegarla en el campo.
+            </p>
+            <button type="button" className="btn btn-sm btn-outline w-full" onClick={onCerrar}>
+              Escribir la dirección
+            </button>
+          </div>
         ) : (
           <>
             <div className="relative bg-base-300 overflow-hidden">
