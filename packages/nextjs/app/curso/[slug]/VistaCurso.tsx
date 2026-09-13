@@ -8,8 +8,10 @@ import { EstadoMembresia } from "~~/components/cursos/EstadoMembresia";
 import { LinajeAcceso } from "~~/components/cursos/LinajeAcceso";
 import { ListaModulos } from "~~/components/cursos/ListaModulos";
 import { ModalTransferir } from "~~/components/cursos/ModalTransferir";
+import { PrestamosHechos } from "~~/components/cursos/PrestamosHechos";
 import { ReproductorVideo } from "~~/components/cursos/ReproductorVideo";
 import { useMembresia } from "~~/hooks/useMembresia";
+import { usePrestamos } from "~~/hooks/usePrestamos";
 import { useUrlDeClase } from "~~/hooks/useUrlDeClase";
 import type { Curso, Modulo } from "~~/types/curso";
 
@@ -30,6 +32,7 @@ export const VistaCurso = ({ curso }: Props) => {
     isLoading,
     refetch,
   } = useMembresia(curso.lockKey);
+  const { prestamos, recuperar, isPending: recuperando } = usePrestamos(curso.lockKey);
   const moduloGratuito = curso.modulos.find(m => m.esGratuito) ?? curso.modulos[0];
   const [moduloActivo, setModuloActivo] = useState<Modulo>(moduloGratuito);
 
@@ -39,6 +42,11 @@ export const VistaCurso = ({ curso }: Props) => {
   // Las clases de pago no vienen en la página: se piden al servidor, que
   // consulta la membresía en el Lock antes de entregar la URL.
   const clase = useUrlDeClase(moduloReproducible, tieneAcceso);
+
+  const manejarRecuperar = async (id: bigint) => {
+    const exitosa = await recuperar(id);
+    if (exitosa) refetch();
+  };
 
   const seleccionarModulo = (modulo: Modulo) => {
     if (tieneAcceso || modulo.esGratuito) setModuloActivo(modulo);
@@ -95,7 +103,28 @@ export const VistaCurso = ({ curso }: Props) => {
             onSeleccionar={seleccionarModulo}
           />
 
-          {!tieneAcceso && (
+          {/* Si lo tienes prestado, lo sensato es recuperarlo, no comprar otro:
+              una wallet solo puede tener una key por curso. */}
+          {!tieneAcceso && prestamos.length > 0 && (
+            <div className="border border-base-content/15 bg-base-100 overflow-hidden">
+              <div className="aguayo" />
+              <div className="p-4">
+                <span className="block text-sm font-medium mb-3">Lo tienes prestado</span>
+                <PrestamosHechos
+                  prestamos={prestamos}
+                  chainId={chainId}
+                  tieneAcceso={tieneAcceso}
+                  recuperando={recuperando}
+                  onRecuperar={manejarRecuperar}
+                />
+                <p className="text-xs text-base-content/45 leading-relaxed mt-3 mb-0">
+                  Recupéralo en vez de comprar otro: una wallet solo puede tener un acceso por curso.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {!tieneAcceso && prestamos.length === 0 && (
             <BotonDesbloquear
               curso={curso}
               lockAddress={lockAddress}

@@ -131,6 +131,9 @@ fallaban. **Wallet A** tiene el acceso; **wallet B** lo recibe.
 | 51 | En `/debug`, comparar `totalKeys`, `balanceOf` y `getHasValidKey` para 0x567… en LockIngles | `1`, `1`, `true` — y el texto explica que el acceso lo decide la tercera | ✓ en cadena |
 | 52 | Ver el código fuente de `/curso/ingles-basico` **sin wallet** y buscar `ingles-02.mp4` | No aparece: solo `ingles-01.mp4`, la clase gratuita | |
 | 53 | `GET /api/clase/1-2?address=<wallet sin membresía>` | `403` con `code: "NO_ACCESS"`; con una wallet con membresía, `{ videoUrl }` | |
+| 55 | Prestar el acceso a una wallet que **ya tiene** el curso | Antes de pedir la firma: "Esa wallet ya tiene un acceso a este curso. Una wallet solo puede tener uno a la vez." | ✓ código |
+| 56 | Tener un préstamo hecho **y** otra key del mismo curso, abrir `/mi-acceso` | El préstamo se lista sin botón "Recuperar" y con la explicación; nada revierte | ✓ código |
+| 57 | Tener un préstamo hecho y ninguna key, abrir el curso | En lugar de "Desbloquear", la tarjeta "Lo tienes prestado" con "Recuperar" | ✓ código |
 | 54 | Con acceso, cambiar de clase | El reproductor muestra un instante de carga y luego la clase; si el servidor falla, "No se pudo obtener esta clase" con "Reintentar" | |
 
 ---

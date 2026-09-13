@@ -181,7 +181,9 @@ Unlock distingue dos formas de pasar una key, y Qupuy expone las dos:
 | **Prestar** | `lendKey` | Quien presta sigue siendo el *key manager*: el receptor tiene el acceso, no puede pasarlo a nadie, y el préstamo se recupera con `unlendKey`. |
 
 "Como se presta un libro" deja de ser una metáfora: es una operación del
-contrato. Y la pantalla de quien recibe (`/recibir`) consulta el Lock cada
+contrato. Con una regla que el Lock impone y la app comprueba antes de pedir
+la firma: **una wallet solo puede tener una key por curso** — no se puede
+prestar a quien ya lo tiene, ni recuperar un préstamo mientras tengas otra. Y la pantalla de quien recibe (`/recibir`) consulta el Lock cada
 pocos segundos, así que anuncia sola el acceso en cuanto llega.
 
 ### El linaje del acceso

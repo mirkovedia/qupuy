@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { AvisoRed } from "./AvisoRed";
 import { EstadoMembresia } from "./EstadoMembresia";
 import { ModalTransferir } from "./ModalTransferir";
+import { PrestamosHechos } from "./PrestamosHechos";
 import { Address } from "@scaffold-ui/components";
 import { useMembresia } from "~~/hooks/useMembresia";
 import { usePrestamos } from "~~/hooks/usePrestamos";
-import { useRedDelLock } from "~~/hooks/useRedDelLock";
 import type { Curso } from "~~/types/curso";
 
 type Props = {
@@ -28,7 +27,6 @@ export const TarjetaAcceso = ({ curso }: Props) => {
     refetch,
   } = useMembresia(curso.lockKey);
   const { prestamos, recuperar, isPending: recuperando } = usePrestamos(curso.lockKey);
-  const { enRedCorrecta } = useRedDelLock(chainId);
 
   const hayPrestamos = prestamos.length > 0;
 
@@ -77,34 +75,14 @@ export const TarjetaAcceso = ({ curso }: Props) => {
         )}
 
         {hayPrestamos && (
-          <ul className="m-0 p-0 list-none space-y-2 mb-4">
-            {prestamos.map(prestamo => (
-              <li
-                key={prestamo.tokenId.toString()}
-                className="flex flex-wrap items-center justify-between gap-2 border border-base-content/10 p-3"
-              >
-                <div className="flex flex-wrap items-center gap-x-2 text-xs text-base-content/55">
-                  <span>Prestado a</span>
-                  <Address address={prestamo.prestadoA} size="xs" />
-                </div>
-                {enRedCorrecta ? (
-                  <button
-                    type="button"
-                    className="btn btn-xs btn-outline"
-                    disabled={recuperando}
-                    onClick={() => manejarRecuperar(prestamo.tokenId)}
-                  >
-                    {recuperando ? "Recuperando…" : "Recuperar"}
-                  </button>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {hayPrestamos && !enRedCorrecta && (
           <div className="mb-4">
-            <AvisoRed chainId={chainId} accion="recuperar tu acceso" compacto />
+            <PrestamosHechos
+              prestamos={prestamos}
+              chainId={chainId}
+              tieneAcceso={tieneAcceso}
+              recuperando={recuperando}
+              onRecuperar={manejarRecuperar}
+            />
           </div>
         )}
 

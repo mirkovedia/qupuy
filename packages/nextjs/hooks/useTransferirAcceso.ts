@@ -6,7 +6,8 @@ import { isAddress } from "viem";
 import { useAccount, usePublicClient, useWriteContract } from "wagmi";
 import { PUBLIC_LOCK_ABI } from "~~/contracts/unlock/publicLockAbi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
-import { type AllowedChainIds, getParsedError, notification } from "~~/utils/scaffold-eth";
+import { MENSAJES_DEL_LOCK, explicarError } from "~~/utils/erroresDelLock";
+import { type AllowedChainIds, notification } from "~~/utils/scaffold-eth";
 
 /**
  * Techo de gas para mover una key.
@@ -60,6 +61,19 @@ export const useTransferirAcceso = (lockAddress: Address | undefined, tokenId: b
 
     setIsPending(true);
     try {
+      // Una wallet solo puede tener una key por curso: si el destino ya tiene
+      // una, el contrato rechazaría la operación. Mejor decirlo antes de firmar.
+      const keysDelDestino = await publicClient.readContract({
+        address: lockAddress,
+        abi: PUBLIC_LOCK_ABI,
+        functionName: "totalKeys",
+        args: [destino],
+      });
+      if (keysDelDestino > 0n) {
+        notification.error(MENSAJES_DEL_LOCK.MAX_KEYS_REACHED);
+        return false;
+      }
+
       // `chainId` fija la red del Lock: si la wallet está en otra, wagmi
       // rechaza la firma en lugar de enviar la transacción donde esté.
       const comun = {
@@ -94,7 +108,7 @@ export const useTransferirAcceso = (lockAddress: Address | undefined, tokenId: b
       );
       return true;
     } catch (error) {
-      notification.error(getParsedError(error));
+      notification.error(explicarError(error));
       return false;
     } finally {
       setIsPending(false);

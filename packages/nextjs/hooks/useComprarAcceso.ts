@@ -5,7 +5,8 @@ import type { Address } from "viem";
 import { useAccount, usePublicClient, useReadContract, useWriteContract } from "wagmi";
 import { DIRECCION_CERO, PUBLIC_LOCK_ABI, SIN_DATOS } from "~~/contracts/unlock/publicLockAbi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
-import { type AllowedChainIds, getParsedError, notification } from "~~/utils/scaffold-eth";
+import { explicarError } from "~~/utils/erroresDelLock";
+import { type AllowedChainIds, notification } from "~~/utils/scaffold-eth";
 
 const SEGUNDOS_POR_DIA = 86_400n;
 
@@ -131,7 +132,7 @@ export const useComprarAcceso = (lockAddress: Address | undefined, tokenIdVencid
       notification.success(esRenovacion ? "¡Listo! Tu acceso está renovado" : "¡Listo! Ya tienes acceso al curso");
       return true;
     } catch (error) {
-      notification.error(getParsedError(error));
+      notification.error(explicarError(error));
       return false;
     } finally {
       setIsPending(false);

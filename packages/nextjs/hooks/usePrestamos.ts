@@ -9,7 +9,8 @@ import { BLOQUE_DESPLIEGUE, resolverLock } from "~~/contracts/unlock/locks";
 import { PUBLIC_LOCK_ABI } from "~~/contracts/unlock/publicLockAbi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { leerTransferencias } from "~~/services/web3/clienteEventos";
-import { type AllowedChainIds, getParsedError, notification } from "~~/utils/scaffold-eth";
+import { explicarError } from "~~/utils/erroresDelLock";
+import { type AllowedChainIds, notification } from "~~/utils/scaffold-eth";
 
 export type Prestamo = {
   tokenId: bigint;
@@ -89,6 +90,21 @@ export const usePrestamos = (lockKey: string) => {
 
     setIsPending(true);
     try {
+      // Una wallet solo puede tener una key por curso: si ya tienes otra, el
+      // Lock no puede devolverte la prestada. Se explica antes de pedir la firma.
+      const misKeys = await publicClient.readContract({
+        address: lockAddress,
+        abi: PUBLIC_LOCK_ABI,
+        functionName: "totalKeys",
+        args: [address],
+      });
+      if (misKeys > 0n) {
+        notification.error(
+          "Ya tienes un acceso a este curso. Una wallet solo puede tener uno: para recuperar el préstamo, primero pasa el que tienes.",
+        );
+        return false;
+      }
+
       const argumentos = {
         address: lockAddress,
         abi: PUBLIC_LOCK_ABI,
@@ -113,7 +129,7 @@ export const usePrestamos = (lockKey: string) => {
       void queryClient.invalidateQueries({ queryKey: ["linaje", chainId, lockAddress] });
       return true;
     } catch (error) {
-      notification.error(getParsedError(error));
+      notification.error(explicarError(error));
       return false;
     } finally {
       setIsPending(false);

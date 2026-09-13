@@ -176,6 +176,23 @@ export const PUBLIC_LOCK_ABI = [
     type: "function",
   },
 
+  // ── Errores ──────────────────────────────────────────────────────────────
+  // Declarados para que viem los decodifique: sin ellos, cualquier rechazo
+  // del contrato llega como un "execution reverted" sin explicación.
+  { inputs: [], name: "MAX_KEYS_REACHED", type: "error" },
+  { inputs: [], name: "UNAUTHORIZED", type: "error" },
+  { inputs: [], name: "ONLY_KEY_MANAGER_OR_APPROVED", type: "error" },
+  { inputs: [], name: "KEY_NOT_VALID", type: "error" },
+  { inputs: [], name: "TRANSFER_TO_SELF", type: "error" },
+  { inputs: [], name: "KEY_TRANSFERS_DISABLED", type: "error" },
+  { inputs: [], name: "NO_SUCH_KEY", type: "error" },
+  { inputs: [], name: "INVALID_ADDRESS", type: "error" },
+  { inputs: [], name: "LOCK_SOLD_OUT", type: "error" },
+  { inputs: [], name: "INSUFFICIENT_VALUE", type: "error" },
+  { inputs: [], name: "NOT_ENOUGH_FUNDS", type: "error" },
+  { inputs: [], name: "CANT_EXTEND_NON_EXPIRING_KEY", type: "error" },
+  { inputs: [], name: "NON_RENEWABLE_LOCK", type: "error" },
+
   // ── Eventos ──────────────────────────────────────────────────────────────
   {
     anonymous: false,
