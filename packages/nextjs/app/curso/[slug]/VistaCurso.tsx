@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { BotonDesbloquear } from "~~/components/cursos/BotonDesbloquear";
 import { EstadoMembresia } from "~~/components/cursos/EstadoMembresia";
+import { LinajeAcceso } from "~~/components/cursos/LinajeAcceso";
 import { ListaModulos } from "~~/components/cursos/ListaModulos";
 import { ModalTransferir } from "~~/components/cursos/ModalTransferir";
 import { ReproductorVideo } from "~~/components/cursos/ReproductorVideo";
@@ -80,6 +81,8 @@ export const VistaCurso = ({ curso }: Props) => {
           {tieneAcceso && (
             <ModalTransferir curso={curso} lockAddress={lockAddress} tokenId={tokenId} onTransferencia={refetch} />
           )}
+
+          <LinajeAcceso lockKey={curso.lockKey} tokenId={tokenId} />
         </aside>
       </div>
     </div>

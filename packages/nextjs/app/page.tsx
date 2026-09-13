@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import { CadenaDemostrativa } from "~~/components/cursos/CadenaDemostrativa";
 import { CursoCard } from "~~/components/cursos/CursoCard";
 import { contentRepository } from "~~/services/content";
 
@@ -21,6 +22,10 @@ const Home: NextPage = async () => {
           presta un libro.
         </p>
       </header>
+
+      <div className="mb-16 sm:mb-20">
+        <CadenaDemostrativa />
+      </div>
 
       <div className="flex items-baseline justify-between mb-6 pb-3 border-b border-base-content/10">
         <h2 className="text-sm uppercase tracking-[0.18em] text-base-content/50 font-sans font-medium m-0">Catálogo</h2>
