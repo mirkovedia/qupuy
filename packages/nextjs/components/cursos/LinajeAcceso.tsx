@@ -1,5 +1,6 @@
 "use client";
 
+import { TarjetaCompartir } from "./TarjetaCompartir";
 import { Address } from "@scaffold-ui/components";
 import { useAccount } from "wagmi";
 import { useLinajeAcceso } from "~~/hooks/useLinajeAcceso";
@@ -7,6 +8,8 @@ import { useLinajeAcceso } from "~~/hooks/useLinajeAcceso";
 type Props = {
   lockKey: string;
   tokenId: bigint | undefined;
+  titulo: string;
+  creador: string;
 };
 
 /**
@@ -16,7 +19,7 @@ type Props = {
  * que ninguna plataforma de cursos puede ofrecer: saber a quién le prestaste
  * tu acceso, y a quién se lo prestó esa persona después.
  */
-export const LinajeAcceso = ({ lockKey, tokenId }: Props) => {
+export const LinajeAcceso = ({ lockKey, tokenId, titulo, creador }: Props) => {
   const { address } = useAccount();
   const { pasos, vecesPasado, personas, isLoading } = useLinajeAcceso(lockKey, tokenId);
 
@@ -93,12 +96,16 @@ export const LinajeAcceso = ({ lockKey, tokenId }: Props) => {
           })}
         </ol>
 
-        {vecesPasado > 0 && (
-          <p className="text-xs text-base-content/50 leading-relaxed mt-5 pt-4 border-t border-base-content/10 mb-0">
-            Ninguna plataforma de cursos sabe a quién le prestaste tu acceso. Aquí la cadena completa vive en la
-            blockchain.
-          </p>
-        )}
+        <div className="mt-5 pt-4 border-t border-base-content/10">
+          {vecesPasado > 0 && (
+            <p className="text-xs text-base-content/50 leading-relaxed mb-4">
+              Ninguna plataforma de cursos sabe a quién le prestaste tu acceso. Aquí la cadena completa vive en la
+              blockchain.
+            </p>
+          )}
+
+          <TarjetaCompartir titulo={titulo} creador={creador} vecesPasado={vecesPasado} personas={personas} />
+        </div>
       </div>
     </div>
   );

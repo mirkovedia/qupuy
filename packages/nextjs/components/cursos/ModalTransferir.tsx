@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { EscanerDireccion } from "./EscanerDireccion";
 import { AddressInput } from "@scaffold-ui/components";
 import type { Address } from "viem";
 import { useTransferirAcceso } from "~~/hooks/useTransferirAcceso";
@@ -16,6 +17,7 @@ type Props = {
 export const ModalTransferir = ({ curso, lockAddress, tokenId, onTransferencia }: Props) => {
   const [abierto, setAbierto] = useState(false);
   const [destino, setDestino] = useState("");
+  const [escaneando, setEscaneando] = useState(false);
   const { transferir, isPending } = useTransferirAcceso(lockAddress, tokenId);
 
   const manejarTransferencia = async () => {
@@ -67,7 +69,34 @@ export const ModalTransferir = ({ curso, lockAddress, tokenId, onTransferencia }
               <label className="block text-xs uppercase tracking-[0.14em] text-base-content/50 mb-2">
                 ¿A quién se lo pasas?
               </label>
-              <AddressInput value={destino} onChange={setDestino} placeholder="0x… o nombre.eth" />
+
+              {escaneando ? (
+                <EscanerDireccion
+                  onDireccion={dir => {
+                    setDestino(dir);
+                    setEscaneando(false);
+                  }}
+                  onCerrar={() => setEscaneando(false)}
+                />
+              ) : (
+                <>
+                  <AddressInput value={destino} onChange={setDestino} placeholder="0x… o nombre.eth" />
+
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm w-full mt-2 gap-2"
+                    onClick={() => setEscaneando(true)}
+                  >
+                    <span aria-hidden>⬚</span>
+                    Escanear su código
+                  </button>
+
+                  <p className="text-xs text-base-content/45 leading-relaxed mt-3 mb-0">
+                    Si están juntos, que abra <span className="dato">qupuy.vercel.app/recibir</span> en su teléfono y
+                    escanea el código que le aparece.
+                  </p>
+                </>
+              )}
 
               <div className="flex gap-2 mt-6">
                 <button

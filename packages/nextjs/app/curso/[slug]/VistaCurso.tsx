@@ -82,7 +82,12 @@ export const VistaCurso = ({ curso }: Props) => {
             <ModalTransferir curso={curso} lockAddress={lockAddress} tokenId={tokenId} onTransferencia={refetch} />
           )}
 
-          <LinajeAcceso lockKey={curso.lockKey} tokenId={tokenId} />
+          <LinajeAcceso
+            lockKey={curso.lockKey}
+            tokenId={tokenId}
+            titulo={curso.titulo}
+            creador={curso.creador.nombre}
+          />
         </aside>
       </div>
     </div>
