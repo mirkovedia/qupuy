@@ -28,6 +28,14 @@ describe("leerLock", () => {
     expect(leerLock("hola", "X")).toBeUndefined();
     expect(leerLock("0x1234", "X")).toBeUndefined();
   });
+
+  it("tolera espacios, comillas y mayúsculas sin checksum, y normaliza a minúsculas", () => {
+    const sinChecksum = "0x761963F20958660130181FA785DDD6EFC64FA862";
+    expect(leerLock(`  ${sinChecksum}  `, "X")).toBe(DIRECCION);
+    expect(leerLock(`"${DIRECCION}"`, "X")).toBe(DIRECCION);
+    expect(leerLock(`'${sinChecksum}'`, "X")).toBe(DIRECCION);
+    expect(console.warn).not.toHaveBeenCalled();
+  });
 });
 
 describe("resolverLock", () => {

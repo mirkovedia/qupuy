@@ -12,11 +12,15 @@ export const BLOQUE_DESPLIEGUE = 11690000n;
 /**
  * Lee la dirección de un Lock desde el entorno.
  *
- * Si falta o no es una dirección, el curso queda sin Lock —y la interfaz lo
- * dice— en lugar de consultar en silencio a la dirección cero.
+ * Se tolera lo que suele pasar al pegar en un panel: espacios, comillas y
+ * mayúsculas sin checksum EIP-55 (la validación estricta de viem las
+ * rechazaría). Se normaliza a minúsculas. Si falta o no es una dirección, el
+ * curso queda sin Lock —y la interfaz lo dice— en lugar de consultar en
+ * silencio a la dirección cero.
  */
 export const leerLock = (variable: string | undefined, nombre: string): Address | undefined => {
-  if (variable && isAddress(variable)) return variable;
+  const limpia = variable?.trim().replace(/^["']|["']$/g, "");
+  if (limpia && isAddress(limpia, { strict: false })) return limpia.toLowerCase() as Address;
   console.warn(`[qupuy] ${nombre} no está definida o no es una dirección válida; el curso quedará sin Lock`);
   return undefined;
 };
