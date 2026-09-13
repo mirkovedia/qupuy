@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Address } from "@scaffold-ui/components";
 import { BotonDesbloquear } from "~~/components/cursos/BotonDesbloquear";
 import { EstadoMembresia } from "~~/components/cursos/EstadoMembresia";
 import { LinajeAcceso } from "~~/components/cursos/LinajeAcceso";
@@ -16,7 +17,18 @@ type Props = {
 };
 
 export const VistaCurso = ({ curso }: Props) => {
-  const { estado, tieneAcceso, diasRestantes, tokenId, lockAddress, isLoading, refetch } = useMembresia(curso.lockKey);
+  const {
+    estado,
+    tieneAcceso,
+    puedeMover,
+    prestadoPor,
+    diasRestantes,
+    tokenId,
+    lockAddress,
+    chainId,
+    isLoading,
+    refetch,
+  } = useMembresia(curso.lockKey);
   const moduloGratuito = curso.modulos.find(m => m.esGratuito) ?? curso.modulos[0];
   const [moduloActivo, setModuloActivo] = useState<Modulo>(moduloGratuito);
 
@@ -76,10 +88,41 @@ export const VistaCurso = ({ curso }: Props) => {
             onSeleccionar={seleccionarModulo}
           />
 
-          {!tieneAcceso && <BotonDesbloquear curso={curso} lockAddress={lockAddress} onCompraExitosa={refetch} />}
+          {!tieneAcceso && (
+            <BotonDesbloquear
+              curso={curso}
+              lockAddress={lockAddress}
+              chainId={chainId}
+              estado={estado}
+              tokenId={tokenId}
+              onCompraExitosa={refetch}
+            />
+          )}
 
-          {tieneAcceso && (
-            <ModalTransferir curso={curso} lockAddress={lockAddress} tokenId={tokenId} onTransferencia={refetch} />
+          {puedeMover && (
+            <ModalTransferir
+              curso={curso}
+              lockAddress={lockAddress}
+              chainId={chainId}
+              tokenId={tokenId}
+              onTransferencia={refetch}
+            />
+          )}
+
+          {tieneAcceso && prestadoPor && (
+            <div className="border border-base-content/15 bg-base-100 overflow-hidden">
+              <div className="aguayo" />
+              <div className="p-4">
+                <span className="block text-sm font-medium mb-1">Es un préstamo</span>
+                <div className="flex flex-wrap items-center gap-x-2 text-xs text-base-content/55">
+                  <span>Te lo prestó</span>
+                  <Address address={prestadoPor} size="xs" />
+                </div>
+                <p className="text-xs text-base-content/45 leading-relaxed mt-2 mb-0">
+                  Solo esa persona puede moverlo o recuperarlo. Mientras tanto, es tuyo.
+                </p>
+              </div>
+            </div>
           )}
 
           <LinajeAcceso
