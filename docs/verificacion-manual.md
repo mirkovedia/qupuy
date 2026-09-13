@@ -42,14 +42,14 @@ Requisitos 3, 4 y 5 del bounty. **Wallet A.**
 
 | # | Escenario | Resultado esperado | ✓/✗ |
 | - | --------- | ------------------ | --- |
-| 6 | Conectar la wallet A (sin membresías) | Aparece el botón "🔓 Desbloquear curso completo" con precio en Bs y en ETH | |
+| 6 | Conectar la wallet A (sin membresías) | Aparece el botón "🔓 Desbloquear curso completo" con precio en Bs y en ETH | ✓ |
 | 7 | Volver a `/` con la wallet conectada | Las tarjetas muestran brevemente un skeleton y luego "Sin acceso" — **nunca un estado incorrecto** | |
 | 8 | Pulsar "Desbloquear" y **rechazar** la firma en la wallet | Mensaje de cancelación; la UI queda consistente y el botón vuelve a estar disponible | |
 | 9 | Pulsar "Desbloquear" y **confirmar** | La wallet pide firma; tras confirmarse aparece "¡Listo! Ya tienes acceso al curso" | ✓ |
 | 10 | Observar la pantalla tras la compra | **El contenido completo aparece sin recargar la página** | ✓ |
 | 11 | Revisar el indicador de estado | "✓ Acceso activo · vence en 29 días" (o 30) | ✓ |
-| 12 | Reproducir un módulo de pago | El video carga y se reproduce | |
-| 13 | Recargar la página con F5 | Sigue mostrando el contenido completo | |
+| 12 | Reproducir un módulo de pago | El video carga y se reproduce | ✓ |
+| 13 | Recargar la página con F5 | Sigue mostrando el contenido completo | ✓ |
 | 14 | Volver a `/` | La tarjeta de ese curso muestra "Acceso activo" | |
 | 15 | Abrir `/mi-acceso` | Aparece solo el curso comprado, con botón "Ver curso" y "Pasar mi acceso a alguien" | |
 
@@ -86,7 +86,7 @@ El diferenciador del proyecto. **Wallet A → Wallet B.**
 
 | # | Escenario | Resultado esperado | ✓/✗ |
 | - | --------- | ------------------ | --- |
-| 26 | Cambiar la wallet a una red distinta (Ethereum mainnet) | Aviso claro de red incorrecta, con opción de volver a Sepolia | ✓ |
+| 26 | Cambiar la wallet a una red distinta | Aviso claro con botón que cambia a Sepolia — **probado: el cambio funciona** | ✓ |
 | 27 | Desconectar la wallet estando en un curso desbloqueado | La vista vuelve al estado de vista previa | |
 | 28 | Intentar comprar con una wallet sin fondos | Mensaje de error legible; la aplicación no se rompe | |
 | 29 | Comprar un curso que ya tienes | El botón no aparece: ya tienes acceso | ✓ código |
@@ -122,7 +122,14 @@ sección de abajo.
 
 ### Incidencias encontradas
 
-_(anotar aquí: número del escenario, qué ocurrió y qué se esperaba)_
+**Videos sin audio.** Los clips de demostración son material de stock, que se
+distribuye sin pista de sonido. No es un fallo: la narración va encima en el
+video de presentación.
+
+**Escenarios 16-25 (transferencia) pendientes de ejecutar.** La llamada se
+simuló contra el contrato y el Lock la acepta — las transferencias están
+habilitadas — pero no se ha completado ninguna en la cadena. Es lo último que
+queda por verificar.
 
 ---
 
