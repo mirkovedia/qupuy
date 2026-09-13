@@ -269,3 +269,26 @@
   --tw-shadow-color: transparent;
   box-shadow: none;
 }
+
+/*
+  Los campos de entrada de la herramienta de contratos vienen con fondo claro,
+  heredado del tema original. Se ajustan al tema del proyecto sin tocar el
+  paquete.
+*/
+.debug-contratos input,
+.debug-contratos textarea {
+  background-color: var(--color-base-200);
+  color: var(--color-base-content);
+  border-color: color-mix(in srgb, var(--color-base-content) 18%, transparent);
+}
+
+.debug-contratos input::placeholder,
+.debug-contratos textarea::placeholder {
+  color: color-mix(in srgb, var(--color-base-content) 35%, transparent);
+}
+
+.debug-contratos input:focus,
+.debug-contratos textarea:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}

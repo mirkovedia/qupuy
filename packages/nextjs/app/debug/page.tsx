@@ -32,10 +32,37 @@ const Debug: NextPage = () => {
               la aplicación, es lo que decide el acceso.
             </li>
           </ol>
+
+          <div className="mt-5 pt-4 border-t border-base-content/10">
+            <h3 className="text-xs uppercase tracking-[0.14em] text-base-content/50 m-0 mb-3">
+              Pruébalo con un caso real
+            </h3>
+            <p className="text-sm text-base-content/65 leading-relaxed m-0 mb-3">
+              El acceso a &ldquo;Reparación de celulares&rdquo; se pasó de una wallet a otra. Consulta{" "}
+              <span className="dato">getHasValidKey</span> en <span className="dato">LockCelulares</span> con estas dos
+              direcciones:
+            </p>
+            <ul className="m-0 p-0 list-none space-y-2">
+              <li className="flex flex-wrap items-baseline gap-x-2">
+                <span className="dato text-xs break-all">0xa6fc1c38ebEbda6507272eaaD42033A1e0102e39</span>
+                <span className="text-xs text-accent">→ true, lo recibió</span>
+              </li>
+              <li className="flex flex-wrap items-baseline gap-x-2">
+                <span className="dato text-xs break-all">0x567FCdC8e7148a60b91F3367D09EB1b23aF413aC</span>
+                <span className="text-xs text-base-content/45">→ false, lo pasó</span>
+              </li>
+            </ul>
+            <p className="text-xs text-base-content/50 leading-relaxed mt-3 mb-0">
+              La segunda dirección sí devuelve <span className="dato">true</span> en{" "}
+              <span className="dato">LockIngles</span>: ese acceso no se transfirió.
+            </p>
+          </div>
         </div>
       </div>
 
-      <DebugContracts />
+      <div className="debug-contratos">
+        <DebugContracts />
+      </div>
     </div>
   );
 };
