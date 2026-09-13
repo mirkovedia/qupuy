@@ -69,12 +69,17 @@ segundo: el acceso cambió de dueño, y solo una persona lo tiene a la vez.
    `getHasValidKey` comprueba la validez temporal dentro del contrato.
 
 2. **El gating es real.** Sin membresía, las URLs de las clases de pago no
-   llegan al navegador: no se renderizan y se ocultan con CSS, sencillamente no
-   existen en la página.
+   llegan al navegador: no se renderizan ni se ocultan con CSS, sencillamente
+   no existen en la página.
 
 3. **El linaje del acceso.** Qupuy lee los eventos `Transfer` del Lock para
    mostrar por cuántas manos ha pasado un curso. Ninguna plataforma puede hacer
    esto — Udemy no sabe a quién le prestaste tu cuenta.
+
+4. **Pasar el acceso escaneando un código.** Pedirle a alguien que dicte su
+   dirección rompe el caso real: dos personas que están juntas. El receptor
+   abre `/recibir` y muestra un QR; quien pasa el acceso lo escanea desde el
+   modal. La transferencia verificada se hizo así.
 
 ---
 
@@ -100,8 +105,9 @@ segundo: el acceso cambió de dueño, y solo una persona lo tiene a la vez.
 
 ## Antes de enviar
 
-- [ ] Ejecutar una transferencia real y anotar el hash arriba
+- [x] Ejecutar una transferencia real — bloque 11694004, hash arriba
+- [x] Comprobar que el repositorio es público
+- [x] Locks desplegados y verificados en Sepolia
 - [ ] Grabar el video (≤ 3 minutos)
-- [ ] Comprobar que el repositorio es público
 - [ ] Revisar que la URL carga desde otro dispositivo
 - [ ] Copiar la declaración de código preexistente del README
