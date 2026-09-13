@@ -2,7 +2,8 @@
 
 import type { Address } from "viem";
 import { formatEther } from "viem";
-import { useAccount } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { useComprarAcceso } from "~~/hooks/useComprarAcceso";
 import type { Curso } from "~~/types/curso";
 
@@ -14,6 +15,8 @@ type Props = {
 
 export const BotonDesbloquear = ({ curso, lockAddress, onCompraExitosa }: Props) => {
   const { address } = useAccount();
+  const { targetNetwork } = useTargetNetwork();
+  const { switchChain, isPending: cambiandoRed } = useSwitchChain();
   const { comprar, isPending, precio } = useComprarAcceso(lockAddress);
 
   if (!address) {
@@ -24,10 +27,30 @@ export const BotonDesbloquear = ({ curso, lockAddress, onCompraExitosa }: Props)
     );
   }
 
+  // Sin Lock en la red activa: la wallet está en otra cadena. Se ofrece el
+  // cambio en lugar de dejar al usuario sin saber qué hacer.
   if (!lockAddress) {
     return (
       <div className="border border-warning/35 bg-warning/10 p-5">
-        <p className="text-sm m-0">Este curso no está disponible en la red seleccionada.</p>
+        <p className="text-sm m-0 mb-1 font-medium">Estás en otra red</p>
+        <p className="text-sm text-base-content/70 m-0 mb-4">
+          Qupuy funciona en {targetNetwork.name}. Cambia de red para desbloquear este curso.
+        </p>
+        <button
+          type="button"
+          className="btn btn-warning btn-sm w-full"
+          disabled={cambiandoRed}
+          onClick={() => switchChain?.({ chainId: targetNetwork.id })}
+        >
+          {cambiandoRed ? (
+            <>
+              <span className="loading loading-spinner loading-xs" />
+              Cambiando…
+            </>
+          ) : (
+            `Cambiar a ${targetNetwork.name}`
+          )}
+        </button>
       </div>
     );
   }

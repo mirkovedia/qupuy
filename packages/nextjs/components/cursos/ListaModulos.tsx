@@ -51,15 +51,20 @@ export const ListaModulos = ({ modulos, tieneAcceso, moduloActivoId, onSeleccion
                   <span>{modulo.titulo}</span>
                 </span>
                 <span className="flex gap-2 items-center shrink-0">
-                  <span className={`dato ${esActivo ? "text-primary/80" : "text-base-content/40"}`}>
-                    {formatearDuracion(modulo.duracionSegundos)}
-                  </span>
                   {desbloqueado ? (
                     modulo.esGratuito && !tieneAcceso ? (
-                      <span className="badge badge-outline badge-xs">gratis</span>
-                    ) : null
+                      <span className="text-[10px] uppercase tracking-wider text-accent border border-accent/40 px-1.5 py-0.5 leading-none">
+                        gratis
+                      </span>
+                    ) : (
+                      <span className={`dato ${esActivo ? "text-primary/70" : "text-base-content/30"}`}>
+                        {formatearDuracion(modulo.duracionSegundos)}
+                      </span>
+                    )
                   ) : (
-                    <span aria-label="Bloqueado">🔒</span>
+                    <span className="text-base-content/30" aria-label="Bloqueado">
+                      🔒
+                    </span>
                   )}
                 </span>
               </button>
