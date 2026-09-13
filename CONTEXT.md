@@ -221,6 +221,7 @@ función del Lock sin UI propia. Es la red de seguridad.
 | 2026-09-13 | `/recibir` consulta `getHasValidKey` de los tres Locks cada 3 s (multicall) | La pantalla del receptor anuncia sola el acceso: en el video, las dos pantallas cambian a la vez | Claude Code (Fable) |
 | 2026-09-13 | README y entrega dicen exactamente qué hace el gating y qué no | La frase "las URLs nunca llegan al navegador" era falsa (viajan en el payload RSC) y contradecía la limitación conocida del mismo README | Claude Code (Fable) |
 | 2026-09-13 | Las clases de pago se quitan en el servidor (`ocultarClasesDePago`) y las entrega `/api/clase/[id]` tras consultar `getHasValidKey` con un cliente viem de servidor | Convierte la afirmación anterior en verdad medible: `curl` de la página sin wallet ya no contiene ninguna URL de pago. Sin SIWE el endpoint confía en la dirección: limitación declarada, no ocultada | Claude Code (Fable) |
+| 2026-09-13 | `NEXT_PUBLIC_LOCK_*` configuradas en el **proyecto de Vercel** (production y preview) vía `vercel env add` | El proyecto no tenía ninguna variable: el cliente funcionaba porque el CLI subía `.env.local` y el build la inyectaba, pero la función de servidor no la veía en ejecución (`503 LOCK_NOT_CONFIGURED`). Verificado en vivo tras el redespliegue: API 200/403 según la cadena | Claude Code (Fable) |
 
 ---
 
