@@ -394,8 +394,9 @@ submissions a otras hackathons.
 
 ## Enlaces
 
-- [Qupuy, explicado](docs/qupuy-explicado.md) — la aplicación de punta a punta, con las preguntas que suele hacer un jurado
-- [Presentación](docs/presentacion.html) — once diapositivas; ábrela en el navegador (←/→, N para notas, F para pantalla completa)
+- [Qupuy, explicado](docs/qupuy-explicado.md) ([.docx](docs/qupuy-explicado.docx)) — la aplicación de punta a punta, con las preguntas que suele hacer un jurado
+- [El pitch](docs/pitch.md) ([.docx](docs/pitch.docx)) — tres minutos, un minuto y una frase, escritos como se hablan
+- [Presentación](docs/presentacion.pptx) — once diapositivas con notas del presentador; también en [HTML](docs/presentacion.html) (←/→, N para notas, F para pantalla completa)
 - [Entrega](docs/entrega.md) — todo lo que pide el bounty, listo para copiar
 - [Unlock Protocol](https://unlock-protocol.com/) · [documentación](https://docs.unlock-protocol.com/)
 - [Scaffold-ETH 2](https://docs.scaffoldeth.io)
