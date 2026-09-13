@@ -65,16 +65,16 @@ El diferenciador del proyecto. **Wallet A → Wallet B.**
 
 | # | Escenario | Resultado esperado | ✓/✗ |
 | - | --------- | ------------------ | --- |
-| 16 | Con la wallet A, pulsar "Pasar mi acceso a alguien" | Se abre el modal con la advertencia "Tú perderás el acceso. Solo una persona puede tenerlo a la vez." | |
+| 16 | Con la wallet A, pulsar "Pasar mi acceso a alguien" | Se abre el modal con la advertencia "Tú perderás el acceso. Solo una persona puede tenerlo a la vez." | ✓ |
 | 17 | Dejar el campo vacío | El botón "Pasar acceso" está deshabilitado | ✓ código |
 | 18 | Escribir una dirección inválida (`0x123`) | Mensaje "Esa dirección no es válida" | ✓ código |
 | 19 | Escribir **tu propia** dirección | Mensaje "No puedes pasarte el acceso a ti mismo" | ✓ código |
 | 20 | Pulsar "Cancelar" | El modal se cierra sin efectos secundarios | |
-| 21 | Escribir la dirección de la wallet B y confirmar | La wallet pide firma; tras confirmarse, "Acceso pasado correctamente" | |
-| 22 | Observar la pantalla de la wallet A | **Pierde el acceso sin recargar**: vuelve al estado de vista previa | |
+| 21 | Escribir la dirección de la wallet B y confirmar | La wallet pide firma; tras confirmarse, "Acceso pasado correctamente" | ✓ escaneando el QR |
+| 22 | Observar la pantalla de la wallet A | **Pierde el acceso sin recargar**: vuelve al estado de vista previa | ✓ |
 | 23 | Seleccionar un módulo de pago antes de transferir, y transferir | Tras la transferencia el reproductor vuelve al módulo gratuito automáticamente | |
 | 24 | Abrir `/mi-acceso` con la wallet A | El curso transferido ya no aparece como activo | |
-| 25 | Conectar la **wallet B** y abrir el curso | Tiene acceso completo, con sus días restantes | |
+| 25 | Conectar la **wallet B** y abrir el curso | Tiene acceso completo, con sus días restantes | ✓ verificado en cadena |
 
 > **El escenario 23** comprueba que el gating no se rompe en la transición: el
 > estado local recuerda el módulo 3, pero la vista debe volver al gratuito
@@ -126,10 +126,15 @@ sección de abajo.
 distribuye sin pista de sonido. No es un fallo: la narración va encima en el
 video de presentación.
 
-**Escenarios 16-25 (transferencia) pendientes de ejecutar.** La llamada se
-simuló contra el contrato y el Lock la acepta — las transferencias están
-habilitadas — pero no se ha completado ninguna en la cadena. Es lo último que
-queda por verificar.
+**Transferencia ejecutada y verificada.** El acceso a "Reparación de celulares"
+pasó de `0x567FCdC…413aC` a `0xa6fc1c38…02e39` en el bloque 11694004, usando el
+escaneo de QR. Tras ella `getHasValidKey` devuelve `false` para el emisor y
+`true` para el receptor. El linaje muestra "Ya pasó por una mano".
+
+**Incidencia resuelta: gas límite.** Un segundo intento de compra sobre un
+curso ya adquirido provocaba que la wallet estimara 21.000.000 de gas, por
+encima del tope de algunos RPC. Se corrigió simulando las transacciones antes
+de pedir la firma y fijando un techo de gas explícito.
 
 ---
 

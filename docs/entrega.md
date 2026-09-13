@@ -38,10 +38,17 @@ Todo lo que pide el submission, listo para copiar.
 
 Contrato Unlock en Sepolia: `0x36b34e10295cCE69B652eEB5a8046041074515Da`
 
-**Transacción de compra de ejemplo:**
-`0xf2af70a9acaa6e66a2346e5defb36c31cb5fd4af05f5c7fc89d30c4129d4d2ca`
+**Transacciones de ejemplo, verificadas en Sepolia:**
 
-**Transacción de transferencia:** _(anotar tras ejecutarla)_
+| Qué | Hash | Bloque |
+| --- | ---- | ------ |
+| Compra de "Inglés desde cero" | `0xf2af70a9acaa6e66a2346e5defb36c31cb5fd4af05f5c7fc89d30c4129d4d2ca` | 11691183 |
+| Compra de "Reparación de celulares" | `0xe8ed5b6541fd467c7c5aa48386ecec7462e3f2f4fa678f593d978b60d815bd26` | 11693688 |
+| **Transferencia del acceso** | `0xc470ff5dd67f8cbc33dd7403e1d5aa3e1ce6100be0c4a86b4b9d22b925046099` | 11694004 |
+
+La transferencia pasó el acceso de `0x567FCdC…413aC` a `0xa6fc1c38…02e39`.
+Tras ella, `getHasValidKey` devuelve `false` para el primero y `true` para el
+segundo: el acceso cambió de dueño, y solo una persona lo tiene a la vez.
 
 ---
 
