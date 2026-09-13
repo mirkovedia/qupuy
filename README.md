@@ -398,6 +398,7 @@ submissions a otras hackathons.
 
 - [Qupuy, explicado](docs/qupuy-explicado.md) ([.docx](docs/qupuy-explicado.docx)) — la aplicación de punta a punta, con las preguntas que suele hacer un jurado
 - [El pitch](docs/pitch.md) ([.docx](docs/pitch.docx)) — tres minutos, un minuto y una frase, escritos como se hablan
+- [Cómo explicar Qupuy](docs/como-explicar.html) — tres diagramas de la arquitectura y, para cada pregunta probable del jurado, qué decir y qué señalar
 - [Presentación](docs/presentacion.pptx) — once diapositivas con notas del presentador; también en [HTML](docs/presentacion.html) (←/→, N para notas, F para pantalla completa)
 - [Entrega](docs/entrega.md) — todo lo que pide el bounty, listo para copiar
 - [Unlock Protocol](https://unlock-protocol.com/) · [documentación](https://docs.unlock-protocol.com/)

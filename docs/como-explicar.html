@@ -1,0 +1,435 @@
+<title>Cómo explicar Qupuy</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --fondo: #f6f2ea;
+    --superficie: #fbf8f2;
+    --texto: #1a1512;
+    --tenue: #6f665c;
+    --linea: rgba(26, 21, 18, 0.14);
+    --chicha: #c43d33;
+    --maiz: #b8811f;
+    --cielo: #2f7f7e;
+    --display: "Fraunces", Georgia, "Times New Roman", serif;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --fondo: #1a1512;
+      --superficie: #221b16;
+      --texto: #f2ede4;
+      --tenue: #a89d90;
+      --linea: rgba(242, 237, 228, 0.16);
+      --chicha: #d4463c;
+      --maiz: #e8b04b;
+      --cielo: #4a9d9c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --fondo: #1a1512;
+    --superficie: #221b16;
+    --texto: #f2ede4;
+    --tenue: #a89d90;
+    --linea: rgba(242, 237, 228, 0.16);
+    --chicha: #d4463c;
+    --maiz: #e8b04b;
+    --cielo: #4a9d9c;
+  }
+
+  body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .aguayo {
+    height: 4px;
+    background-image: repeating-linear-gradient(90deg, var(--chicha) 0 14px, var(--maiz) 14px 22px, var(--cielo) 22px 28px, transparent 28px 34px);
+  }
+  main {
+    width: min(880px, 100% - 2 * clamp(16px, 5vw, 48px));
+    margin-inline: auto;
+    padding-block: 40px 80px;
+  }
+  header { margin-bottom: 40px; }
+  .ojo { font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--tenue); margin: 0 0 8px; }
+  h1 { font-family: var(--display); font-weight: 600; font-size: clamp(34px, 6vw, 52px); line-height: 1.02; margin: 0 0 14px; text-wrap: balance; letter-spacing: -0.01em; }
+  h2 { font-family: var(--display); font-weight: 600; font-size: clamp(24px, 3.4vw, 30px); line-height: 1.1; margin: 0 0 14px; text-wrap: balance; }
+  h3 { font-family: var(--display); font-weight: 600; font-size: 18px; margin: 0 0 6px; }
+  p { margin: 0; }
+  .texto { color: var(--tenue); max-width: 62ch; }
+  section { padding-block: 36px; border-top: 1px solid var(--linea); }
+  .dato { font-family: var(--mono); font-size: 0.85em; }
+  code { font-family: var(--mono); font-size: 0.85em; padding: 1px 5px; background: color-mix(in srgb, var(--texto) 7%, transparent); border-radius: 3px; }
+
+  .cita {
+    border-left: 3px solid var(--chicha);
+    padding: 14px 18px;
+    background: var(--superficie);
+    font-family: var(--display);
+    font-size: clamp(17px, 2.3vw, 20px);
+    line-height: 1.45;
+    margin: 18px 0 0;
+  }
+  .cita strong { font-weight: 600; }
+
+  figure { margin: 22px 0 0; }
+  .lienzo { overflow-x: auto; border: 1px solid var(--linea); background: var(--superficie); padding: 14px; }
+  .lienzo svg { display: block; min-width: 640px; width: 100%; height: auto; color: var(--texto); font-family: var(--sans); }
+  figcaption { font-size: 14px; color: var(--tenue); margin-top: 10px; max-width: 70ch; }
+  .svg-mono { font-family: var(--mono); }
+
+  /* Flujo de respuestas: pregunta → qué decir → qué señalar */
+  .flujo { display: grid; gap: 12px; margin-top: 18px; }
+  .paso {
+    display: grid; gap: 12px 20px; grid-template-columns: minmax(150px, 0.8fr) minmax(220px, 1.6fr) minmax(150px, 0.9fr);
+    padding: 16px 18px; border: 1px solid var(--linea); background: var(--superficie); align-items: start;
+  }
+  .paso .pregunta { font-family: var(--display); font-weight: 600; font-size: 17px; line-height: 1.2; }
+  .paso .di { font-size: 15px; }
+  .paso .senala { font-size: 13px; color: var(--tenue); }
+  .paso .senala .dato { display: block; margin-top: 2px; color: var(--texto); }
+  .paso.viva { border-color: color-mix(in srgb, var(--chicha) 55%, transparent); }
+  @media (max-width: 640px) { .paso { grid-template-columns: 1fr; } }
+
+  .tabla-envoltura { overflow-x: auto; margin-top: 18px; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { text-align: left; padding: 10px 14px 10px 0; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--tenue); font-weight: 500; }
+
+  .rejilla { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-top: 18px; }
+  .no { padding: 14px 16px; border: 1px solid var(--linea); background: var(--superficie); font-size: 14.5px; }
+  .no .ojo { color: var(--chicha); }
+  ol.metodo { margin: 14px 0 0; padding-left: 22px; }
+  ol.metodo li { margin-bottom: 8px; }
+</style>
+
+<div class="aguayo" aria-hidden="true"></div>
+<main>
+  <header>
+    <p class="ojo">Guía de bolsillo · para responder al jurado</p>
+    <h1>Cómo explicar Qupuy</h1>
+    <p class="texto">Tres dibujos que muestran cómo está hecho, y para cada pregunta probable: qué decir y qué señalar. Está pensado para tenerlo abierto en el celular mientras hablas.</p>
+    <div class="cita">
+      <strong>La respuesta de treinta segundos.</strong> "Es un monorepo sobre Scaffold-ETH 2. Frontend en Next.js 16 con wagmi y viem para hablar con la cadena, RainbowKit para la wallet, Tailwind con DaisyUI. <strong>Cero Solidity propio</strong>: los cursos son PublicLock v14 de Unlock en Sepolia. La lógica de acceso vive en hooks; los componentes nunca tocan un contrato. Y un route handler en el servidor consulta el contrato antes de entregar una clase de pago."
+    </div>
+  </header>
+
+  <!-- ── 1 · Las capas ─────────────────────────────────────────────────── -->
+  <section>
+    <p class="ojo">Si preguntan "¿cómo está organizado?"</p>
+    <h2>Cuatro capas, y una regla: ningún componente llama a un contrato.</h2>
+    <p class="texto">Todo lo que sabe de Unlock vive en una sola capa. Si Unlock cambia, se toca ahí y en ningún otro sitio.</p>
+
+    <figure>
+      <div class="lienzo">
+        <svg viewBox="0 0 720 330" role="img" aria-label="Las cuatro capas de Qupuy apiladas: presentación, componentes, capa de acceso y datos; solo la capa de acceso y el servidor hablan con el Lock, y la flecha directa de componentes al Lock está tachada">
+          <defs>
+            <marker id="flecha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+            </marker>
+            <marker id="flecha-viva" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#d4463c"/>
+            </marker>
+          </defs>
+
+          <!-- Capas -->
+          <g font-size="12">
+            <rect x="20" y="20" width="300" height="56" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="34" y="43" font-weight="600" font-size="13">Presentación</text>
+            <text x="34" y="62" class="svg-mono" fill="currentColor" opacity="0.7">app/ · portada, /curso, /mi-acceso, /recibir</text>
+
+            <rect x="20" y="96" width="300" height="56" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="34" y="119" font-weight="600" font-size="13">Componentes de dominio</text>
+            <text x="34" y="138" class="svg-mono" opacity="0.7">components/cursos/ · botones, modal, linaje, QR</text>
+
+            <rect x="20" y="172" width="300" height="56" fill="none" stroke="#d4463c" stroke-width="2"/>
+            <text x="34" y="195" font-weight="600" font-size="13" fill="#d4463c">Capa de acceso — lo único que conoce Unlock</text>
+            <text x="34" y="214" class="svg-mono" opacity="0.7">hooks/ · useMembresia, useComprarAcceso, usePrestamos…</text>
+
+            <rect x="20" y="248" width="300" height="56" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="34" y="271" font-weight="600" font-size="13">Datos y cadena</text>
+            <text x="34" y="290" class="svg-mono" opacity="0.7">services/content/ · contracts/unlock/</text>
+          </g>
+
+          <!-- Flechas entre capas -->
+          <g stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#flecha)">
+            <line x1="170" y1="76" x2="170" y2="94"/>
+            <line x1="170" y1="152" x2="170" y2="170"/>
+            <line x1="170" y1="228" x2="170" y2="246"/>
+          </g>
+          <g font-size="11" fill="currentColor" opacity="0.75">
+            <text x="178" y="89">renderiza</text>
+            <text x="178" y="165">llama</text>
+            <text x="178" y="241">resuelve Lock y ABI</text>
+          </g>
+
+          <!-- El Lock -->
+          <rect x="470" y="172" width="230" height="56" fill="none" stroke="#d4463c" stroke-width="2"/>
+          <text x="485" y="195" font-weight="600" font-size="13" fill="#d4463c">Lock de Unlock</text>
+          <text x="485" y="214" class="svg-mono" font-size="12" opacity="0.7">PublicLock v14 · Sepolia</text>
+
+          <!-- Hooks -> Lock (la única flecha viva) -->
+          <line x1="320" y1="200" x2="468" y2="200" stroke="#d4463c" stroke-width="2" marker-end="url(#flecha-viva)"/>
+          <text x="394" y="192" font-size="11" fill="#d4463c" text-anchor="middle">lee y escribe (viem)</text>
+
+          <!-- Servidor -->
+          <rect x="470" y="20" width="230" height="56" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="485" y="43" font-weight="600" font-size="13">Servidor</text>
+          <text x="485" y="62" class="svg-mono" font-size="12" opacity="0.7">/api/clase/[id]</text>
+
+          <!-- Presentación -> Servidor -->
+          <line x1="320" y1="48" x2="468" y2="48" stroke="currentColor" stroke-width="1.2" marker-end="url(#flecha)"/>
+          <text x="394" y="40" font-size="11" text-anchor="middle" opacity="0.75">pide una clase de pago</text>
+
+          <!-- Servidor -> Lock -->
+          <line x1="585" y1="76" x2="585" y2="170" stroke="currentColor" stroke-width="1.2" marker-end="url(#flecha)"/>
+          <text x="593" y="126" font-size="11" class="svg-mono" opacity="0.75">getHasValidKey</text>
+
+          <!-- Componentes -> Lock: la flecha que no existe -->
+          <line x1="320" y1="124" x2="468" y2="180" stroke="currentColor" stroke-width="1" stroke-dasharray="4 4" opacity="0.5"/>
+          <line x1="386" y1="140" x2="402" y2="162" stroke="#d4463c" stroke-width="2"/>
+          <line x1="402" y1="140" x2="386" y2="162" stroke="#d4463c" stroke-width="2"/>
+          <text x="394" y="176" font-size="11" fill="#d4463c" text-anchor="middle" font-weight="600">nunca</text>
+        </svg>
+      </div>
+      <figcaption>Solo dos flechas llegan al Lock: la de los hooks (cliente) y la del route handler (servidor). La directa desde los componentes no existe, y es lo que hace que cambiar de protocolo o de red sea tocar una capa.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── 2 · Quién decide el acceso ────────────────────────────────────── -->
+  <section>
+    <p class="ojo">Si preguntan "¿dónde decide el acceso?" o "¿el gating es real?"</p>
+    <h2>Lo decide el contrato, y se le pregunta dos veces.</h2>
+    <p class="texto">Una vez en el navegador, para pintar la interfaz. Otra en el servidor, antes de entregar una clase de pago. Las URLs de pago no viajan en la página.</p>
+
+    <figure>
+      <div class="lienzo">
+        <svg viewBox="0 0 760 290" role="img" aria-label="Flujo de acceso: la página llega sin URLs de pago; el navegador pregunta al Lock si la wallet tiene key válida; si sí, pide la clase al servidor, que vuelve a preguntar al Lock antes de entregar la URL; si no, solo la vista previa">
+            <defs>
+            <marker id="f2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <!-- Fila principal -->
+          <g font-size="12" fill="currentColor">
+            <rect x="16" y="40" width="130" height="64" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="81" y="66" text-anchor="middle" font-weight="600" font-size="13">Página del curso</text>
+            <text x="81" y="86" text-anchor="middle" font-size="11" opacity="0.75">sin URLs de pago</text>
+
+            <rect x="196" y="40" width="150" height="64" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="271" y="62" text-anchor="middle" font-weight="600" font-size="13">Navegador</text>
+            <text x="271" y="80" text-anchor="middle" font-size="11" class="svg-mono" opacity="0.75">¿getHasValidKey?</text>
+            <text x="271" y="95" text-anchor="middle" font-size="11" opacity="0.75">useMembresia</text>
+
+            <rect x="396" y="40" width="150" height="64" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="471" y="62" text-anchor="middle" font-weight="600" font-size="13">Servidor</text>
+            <text x="471" y="80" text-anchor="middle" font-size="11" class="svg-mono" opacity="0.75">¿getHasValidKey?</text>
+            <text x="471" y="95" text-anchor="middle" font-size="11" opacity="0.75">/api/clase/[id]</text>
+
+            <rect x="596" y="40" width="148" height="64" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="670" y="66" text-anchor="middle" font-weight="600" font-size="13">Reproductor</text>
+            <text x="670" y="86" text-anchor="middle" font-size="11" opacity="0.75">clase de pago</text>
+          </g>
+
+          <g stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#f2)">
+            <line x1="146" y1="72" x2="194" y2="72"/>
+            <line x1="346" y1="72" x2="394" y2="72"/>
+            <line x1="546" y1="72" x2="594" y2="72"/>
+          </g>
+          <g font-size="11" fill="currentColor" opacity="0.8" text-anchor="middle">
+            <text x="170" y="64">carga</text>
+            <text x="370" y="64" font-weight="600">true → pide clase</text>
+            <text x="570" y="64" font-weight="600">true → URL</text>
+          </g>
+
+          <!-- Ramas false -->
+          <g stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#f2)" stroke-dasharray="4 3">
+            <line x1="271" y1="104" x2="271" y2="150"/>
+            <line x1="471" y1="104" x2="471" y2="150"/>
+          </g>
+          <g font-size="12" fill="currentColor">
+            <rect x="196" y="152" width="150" height="40" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3"/>
+            <text x="271" y="176" text-anchor="middle">false → solo la vista previa</text>
+            <rect x="396" y="152" width="150" height="40" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3"/>
+            <text x="471" y="176" text-anchor="middle" class="svg-mono">false → 403 NO_ACCESS</text>
+          </g>
+
+          <!-- El Lock, abajo, al que apuntan las dos preguntas -->
+          <rect x="296" y="228" width="200" height="48" fill="none" stroke="#d4463c" stroke-width="2"/>
+          <text x="396" y="249" text-anchor="middle" font-weight="600" font-size="13" fill="#d4463c">Lock · PublicLock v14</text>
+          <text x="396" y="267" text-anchor="middle" font-size="11" class="svg-mono" opacity="0.75">el que decide</text>
+          <g stroke="#d4463c" stroke-width="1.4" fill="none">
+            <path d="M 236 104 C 236 200, 330 205, 340 226"/>
+            <path d="M 506 104 C 506 200, 462 205, 452 226"/>
+          </g>
+        </svg>
+      </div>
+      <figcaption>Las dos preguntas van al mismo contrato. Si la respuesta es falsa en el navegador, se ve la clase gratuita; si es falsa en el servidor, no sale ninguna URL. La limitación declarada: el servidor confía en la dirección que se le indica (sin firma SIWE).</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── 3 · Pasar el acceso ───────────────────────────────────────────── -->
+  <section>
+    <p class="ojo">Si preguntan "¿cómo funciona lo de prestar?"</p>
+    <h2>Prestar deja a quien presta como <em>key manager</em>. Regalar, no.</h2>
+    <p class="texto">Esa es la única diferencia entre las dos operaciones, y es la que permite recuperar un préstamo.</p>
+
+    <figure>
+      <div class="lienzo">
+        <svg viewBox="0 0 760 330" role="img" aria-label="Persona A pasa su acceso al Lock con lendKey o transferFrom; el Lock lo entrega a B y emite un evento Transfer; la pantalla de B consulta el Lock cada tres segundos y anuncia la llegada; el linaje lee los eventos; con lendKey, una flecha punteada de vuelta indica que A sigue siendo key manager y puede recuperarlo con unlendKey">
+          <defs>
+            <marker id="f3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+            </marker>
+            <marker id="f3v" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#d4463c"/>
+            </marker>
+          </defs>
+
+          <!-- A -->
+          <rect x="16" y="90" width="150" height="70" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="91" y="116" text-anchor="middle" font-weight="600" font-size="13" fill="currentColor">A · tiene el acceso</text>
+          <text x="91" y="136" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">modal "Pasar mi acceso"</text>
+          <text x="91" y="150" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">escanea el QR de B</text>
+
+          <!-- Lock -->
+          <rect x="296" y="90" width="170" height="70" fill="none" stroke="#d4463c" stroke-width="2"/>
+          <text x="381" y="116" text-anchor="middle" font-weight="600" font-size="13" fill="#d4463c">Lock</text>
+          <text x="381" y="136" text-anchor="middle" font-size="11" class="svg-mono" fill="currentColor" opacity="0.75">una key por wallet</text>
+          <text x="381" y="150" text-anchor="middle" font-size="11" class="svg-mono" fill="currentColor" opacity="0.75">emite Transfer</text>
+
+          <!-- B -->
+          <rect x="596" y="90" width="150" height="70" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="671" y="116" text-anchor="middle" font-weight="600" font-size="13" fill="currentColor">B · lo recibe</text>
+          <text x="671" y="136" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">/recibir muestra su QR</text>
+          <text x="671" y="150" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">"¡Recibiste el curso!"</text>
+
+          <!-- A -> Lock -->
+          <line x1="166" y1="112" x2="294" y2="112" stroke="#d4463c" stroke-width="2" marker-end="url(#f3v)"/>
+          <text x="230" y="104" text-anchor="middle" font-size="11" class="svg-mono" fill="#d4463c" font-weight="600">lendKey · prestar</text>
+          <line x1="166" y1="142" x2="294" y2="142" stroke="currentColor" stroke-width="1.2" marker-end="url(#f3)"/>
+          <text x="230" y="158" text-anchor="middle" font-size="11" class="svg-mono" fill="currentColor" opacity="0.8">transferFrom · regalar</text>
+
+          <!-- Lock -> B -->
+          <line x1="466" y1="125" x2="594" y2="125" stroke="currentColor" stroke-width="1.2" marker-end="url(#f3)"/>
+          <text x="530" y="117" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.8">la key pasa a B</text>
+
+          <!-- B consulta -->
+          <path d="M 640 160 C 640 215, 470 215, 466 150" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#f3)"/>
+          <text x="560" y="222" text-anchor="middle" font-size="11" class="svg-mono" fill="currentColor" opacity="0.8">getHasValidKey cada 3 s</text>
+
+          <!-- La vuelta del préstamo -->
+          <path d="M 296 100 C 240 40, 150 40, 100 88" fill="none" stroke="#d4463c" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#f3v)"/>
+          <text x="198" y="46" text-anchor="middle" font-size="11" class="svg-mono" fill="#d4463c">keyManagerOf = A → unlendKey lo recupera</text>
+          <text x="198" y="62" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">solo si fue préstamo · B no puede pasarlo</text>
+
+          <!-- Linaje -->
+          <rect x="296" y="250" width="170" height="60" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="381" y="273" text-anchor="middle" font-weight="600" font-size="13" fill="currentColor">Linaje</text>
+          <text x="381" y="292" text-anchor="middle" font-size="11" class="svg-mono" fill="currentColor" opacity="0.75">clienteEventos lee Transfer</text>
+          <line x1="381" y1="160" x2="381" y2="248" stroke="currentColor" stroke-width="1.2" marker-end="url(#f3)"/>
+          <text x="392" y="208" font-size="11" fill="currentColor" opacity="0.8">cada mano, pública</text>
+        </svg>
+      </div>
+      <figcaption>Con <code>lendKey</code>, A sigue siendo <em>key manager</em>: B tiene el acceso pero no puede moverlo, y A lo recupera con <code>unlendKey</code>. Con <code>transferFrom</code> el manager se reinicia y B es dueño pleno. En los dos casos A pierde el acceso en el acto: una wallet solo puede tener una key por curso.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── 4 · El flujo de respuestas ────────────────────────────────────── -->
+  <section>
+    <p class="ojo">El método</p>
+    <h2>Cualquier pregunta técnica se responde en tres pasos.</h2>
+    <ol class="metodo">
+      <li><strong>Nombra la capa</strong> donde vive la respuesta (presentación, componentes, acceso, datos, servidor).</li>
+      <li><strong>Di quién decide</strong>: casi siempre el contrato, no la aplicación.</li>
+      <li><strong>Señala el archivo.</strong> Si no lo recuerdas: "está en el README".</li>
+    </ol>
+
+    <div class="flujo">
+      <div class="paso">
+        <div class="pregunta">"¿Qué stack usan?"</div>
+        <div class="di">Next.js 16 con App Router, wagmi y viem, RainbowKit, Tailwind con DaisyUI, sobre Scaffold-ETH 2. TypeScript estricto. Vitest para la lógica.</div>
+        <div class="senala">Señala:<span class="dato">README → Stack</span></div>
+      </div>
+      <div class="paso">
+        <div class="pregunta">"¿Por qué Scaffold-ETH?"</div>
+        <div class="di">Porque en 48 horas no se escribe una conexión de wallet ni un debug de contratos. Viene resuelto y está declarado como código preexistente. Todo lo de Qupuy es propio.</div>
+        <div class="senala">Señala:<span class="dato">README → Código preexistente</span></div>
+      </div>
+      <div class="paso viva">
+        <div class="pregunta">"¿Por qué no escribieron contratos?"</div>
+        <div class="di">Porque el bounty evalúa la integración con Unlock, no el volumen de Solidity. El PublicLock ya tiene compra, vencimiento, transferencia y préstamo. Un contrato propio añadía bugs, tests y despliegue sin sumar puntos.</div>
+        <div class="senala">Señala:<span class="dato">contracts/unlock/publicLockAbi.ts</span></div>
+      </div>
+      <div class="paso viva">
+        <div class="pregunta">"¿Dónde decide el acceso?"</div>
+        <div class="di">En el contrato, con <code>getHasValidKey</code>. Se consulta en el navegador para pintar y en el servidor antes de entregar una clase. Las URLs de pago no viajan en la página.</div>
+        <div class="senala">Señala:<span class="dato">hooks/useMembresia.ts · app/api/clase/[moduloId]/route.ts</span></div>
+      </div>
+      <div class="paso viva">
+        <div class="pregunta">"¿Y balanceOf?"</div>
+        <div class="di">Cambió de semántica entre versiones: en v14 solo cuenta keys válidas, antes contaba todas. Apoyar el acceso en ella acopla la app a la versión del contrato. <code>getHasValidKey</code> no depende de eso y ejecuta los hooks de validez. Lo verificamos en el código fuente de la versión desplegada.</div>
+        <div class="senala">Señala:<span class="dato">README → La decisión técnica central</span></div>
+      </div>
+      <div class="paso">
+        <div class="pregunta">"¿Cómo hablan con la cadena?"</div>
+        <div class="di">viem por debajo, wagmi encima con TanStack Query. Toda escritura se simula antes de pedir la firma, con techo de gas y el <code>chainId</code> del Lock fijado: nunca se firma en otra red. Los eventos van por un cliente aparte porque <code>eth_getLogs</code> es lo que más limitan los RPC.</div>
+        <div class="senala">Señala:<span class="dato">hooks/useComprarAcceso.ts · services/web3/clienteEventos.ts</span></div>
+      </div>
+      <div class="paso">
+        <div class="pregunta">"¿Qué pasa cuando vence?"</div>
+        <div class="di">El curso vuelve a vista previa y el botón dice "Renovar": llama a <code>extend</code> sobre la misma key. Unlock no deja volver a comprar si ya tienes una.</div>
+        <div class="senala">Señala:<span class="dato">hooks/useComprarAcceso.ts</span></div>
+      </div>
+      <div class="paso">
+        <div class="pregunta">"¿Es seguro del todo?"</div>
+        <div class="di">No, y está en el README: el endpoint confía en la dirección que se le indica, sin firma, y los videos son archivos estáticos. Producción es SIWE y URLs firmadas. Preferimos declararlo.</div>
+        <div class="senala">Señala:<span class="dato">README → Limitación conocida</span></div>
+      </div>
+      <div class="paso">
+        <div class="pregunta">"¿Tests?"</div>
+        <div class="di">Treinta y tres, sobre la lógica pura: vencimiento, resolución de Locks, filtrado de clases de pago, troceado de bloques, traducción de errores del contrato. La interfaz se verifica contra 57 escenarios manuales. Lint, tipos y build en verde en CI.</div>
+        <div class="senala">Señala:<span class="dato">docs/verificacion-manual.md · .github/workflows</span></div>
+      </div>
+      <div class="paso">
+        <div class="pregunta">"¿Y a producción?"</div>
+        <div class="di">Vercel, con las direcciones de los Locks y las claves en variables del proyecto. Sepolia hoy; mainnet es añadir una entrada al registro de Locks. Unlock ya opera en Base y Avalanche.</div>
+        <div class="senala">Señala:<span class="dato">contracts/unlock/locks.ts</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 5 · Qué RPC usa cada cosa ─────────────────────────────────────── -->
+  <section>
+    <p class="ojo">Si escarban en la infraestructura</p>
+    <h2>Qué habla con qué.</h2>
+    <div class="tabla-envoltura">
+      <table>
+        <thead><tr><th>Qué</th><th>Por dónde</th><th>Por qué</th></tr></thead>
+        <tbody>
+          <tr><td>Lecturas, multicall, simulaciones (navegador)</td><td class="dato">Alchemy, clave propia</td><td>Rápido y fiable para <code>eth_call</code></td></tr>
+          <tr><td>Verificación de membresía (servidor)</td><td class="dato">Alchemy, clave propia</td><td>Mismo cliente, del lado del servidor</td></tr>
+          <tr><td>Eventos: linaje y préstamos</td><td class="dato">Tenderly → PublicNode → clave SE-2</td><td>El plan gratuito de Alchemy limita <code>eth_getLogs</code> a 10 bloques; estos aceptan 200k y 50k. Se lee en tramos de 40k</td></tr>
+          <tr><td>Firmas</td><td class="dato">la wallet, con chainId fijado</td><td>wagmi rechaza la firma si la wallet está en otra red</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 6 · Lo que no hay que decir ───────────────────────────────────── -->
+  <section>
+    <p class="ojo">Cuidado</p>
+    <h2>Tres frases que restan.</h2>
+    <div class="rejilla">
+      <div class="no"><p class="ojo">No digas</p><p>"Guardamos los cursos en la blockchain." Los cursos están en un archivo tipado tras una interfaz. En la cadena están <strong>las membresías</strong>.</p></div>
+      <div class="no"><p class="ojo">No digas</p><p>"balanceOf devuelve 1 aunque esté vencida." Es falso en v14. Di que cambió de semántica entre versiones.</p></div>
+      <div class="no"><p class="ojo">No digas</p><p>"NFT" o "token" ante público general: di <strong>acceso</strong>. Ante el jurado técnico sí: una key ERC-721 del PublicLock v14.</p></div>
+    </div>
+  </section>
+</main>
