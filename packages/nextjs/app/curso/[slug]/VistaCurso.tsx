@@ -10,6 +10,7 @@ import { ListaModulos } from "~~/components/cursos/ListaModulos";
 import { ModalTransferir } from "~~/components/cursos/ModalTransferir";
 import { ReproductorVideo } from "~~/components/cursos/ReproductorVideo";
 import { useMembresia } from "~~/hooks/useMembresia";
+import { useUrlDeClase } from "~~/hooks/useUrlDeClase";
 import type { Curso, Modulo } from "~~/types/curso";
 
 type Props = {
@@ -34,6 +35,10 @@ export const VistaCurso = ({ curso }: Props) => {
 
   // El módulo que se puede reproducir: sin acceso, siempre el gratuito.
   const moduloReproducible = tieneAcceso ? moduloActivo : moduloGratuito;
+
+  // Las clases de pago no vienen en la página: se piden al servidor, que
+  // consulta la membresía en el Lock antes de entregar la URL.
+  const clase = useUrlDeClase(moduloReproducible, tieneAcceso);
 
   const seleccionarModulo = (modulo: Modulo) => {
     if (tieneAcceso || modulo.esGratuito) setModuloActivo(modulo);
@@ -73,9 +78,11 @@ export const VistaCurso = ({ curso }: Props) => {
       <div className="grid gap-8 lg:gap-10 lg:grid-cols-[1.8fr_1fr] items-start">
         <div>
           <ReproductorVideo
-            src={moduloReproducible.videoUrl}
+            src={clase.src}
             titulo={moduloReproducible.titulo}
             esVistaPrevia={!tieneAcceso}
+            hayError={clase.hayError}
+            onReintentar={clase.reintentar}
           />
           <p className="text-base-content/70 leading-relaxed mt-8">{curso.descripcion}</p>
         </div>

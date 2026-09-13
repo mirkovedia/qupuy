@@ -1,6 +1,7 @@
 import { PantallaRecibir } from "./PantallaRecibir";
 import type { NextPage } from "next";
 import { contentRepository } from "~~/services/content";
+import { ocultarClasesDePago } from "~~/services/content/publico";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 export const metadata = getMetadata({
@@ -9,7 +10,7 @@ export const metadata = getMetadata({
 });
 
 const Recibir: NextPage = async () => {
-  const cursos = await contentRepository.listarCursos();
+  const cursos = (await contentRepository.listarCursos()).map(ocultarClasesDePago);
   return <PantallaRecibir cursos={cursos} />;
 };
 

@@ -3,7 +3,12 @@ export type Modulo = {
   titulo: string;
   /** Duración real del archivo de video, en segundos. */
   duracionSegundos: number;
-  videoUrl: string;
+  /**
+   * URL del video. En la página solo viaja para el módulo gratuito: las de
+   * pago las entrega `/api/clase/[id]` después de consultar la membresía en
+   * el contrato.
+   */
+  videoUrl?: string;
   /** El módulo de vista previa, accesible sin membresía */
   esGratuito: boolean;
 };

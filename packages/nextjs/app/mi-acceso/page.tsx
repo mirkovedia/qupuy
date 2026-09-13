@@ -1,9 +1,10 @@
 import { ListaAccesos } from "./ListaAccesos";
 import type { NextPage } from "next";
 import { contentRepository } from "~~/services/content";
+import { ocultarClasesDePago } from "~~/services/content/publico";
 
 const MiAcceso: NextPage = async () => {
-  const cursos = await contentRepository.listarCursos();
+  const cursos = (await contentRepository.listarCursos()).map(ocultarClasesDePago);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-12 max-w-6xl">
