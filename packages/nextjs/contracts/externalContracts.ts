@@ -1,3 +1,4 @@
+import { BLOQUE_DESPLIEGUE } from "./unlock/locks";
 import { PUBLIC_LOCK_ABI } from "./unlock/publicLockAbi";
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
@@ -11,28 +12,22 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
  */
 const DIRECCION_CERO = "0x0000000000000000000000000000000000000000";
 
-/**
- * Bloque aproximado en el que se desplegaron los Locks. Scaffold-ETH 2 lo usa
- * como punto de partida al buscar eventos, para no recorrer la cadena entera.
- */
-const BLOQUE_DESPLIEGUE = 11690000;
-
 const externalContracts = {
   11155111: {
     LockIngles: {
       address: (process.env.NEXT_PUBLIC_LOCK_INGLES ?? DIRECCION_CERO) as `0x${string}`,
       abi: PUBLIC_LOCK_ABI,
-      deployedOnBlock: BLOQUE_DESPLIEGUE,
+      deployedOnBlock: Number(BLOQUE_DESPLIEGUE),
     },
     LockExcel: {
       address: (process.env.NEXT_PUBLIC_LOCK_EXCEL ?? DIRECCION_CERO) as `0x${string}`,
       abi: PUBLIC_LOCK_ABI,
-      deployedOnBlock: BLOQUE_DESPLIEGUE,
+      deployedOnBlock: Number(BLOQUE_DESPLIEGUE),
     },
     LockCelulares: {
       address: (process.env.NEXT_PUBLIC_LOCK_CELULARES ?? DIRECCION_CERO) as `0x${string}`,
       abi: PUBLIC_LOCK_ABI,
-      deployedOnBlock: BLOQUE_DESPLIEGUE,
+      deployedOnBlock: Number(BLOQUE_DESPLIEGUE),
     },
   },
 } as const;

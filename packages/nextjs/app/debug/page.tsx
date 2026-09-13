@@ -32,6 +32,11 @@ const Debug: NextPage = () => {
               la aplicación, es lo que decide el acceso.
             </li>
           </ol>
+          <p className="text-xs text-base-content/50 leading-relaxed mt-3 mb-0">
+            Compara con <span className="dato">totalKeys</span>, que cuenta todas las membresías de una wallet —vencidas
+            incluidas—, y con <span className="dato">balanceOf</span>, que en esta versión del contrato solo cuenta las
+            válidas. Por eso el acceso lo decide <span className="dato">getHasValidKey</span> y no ninguna de las dos.
+          </p>
 
           <div className="mt-5 pt-4 border-t border-base-content/10">
             <h3 className="text-xs uppercase tracking-[0.14em] text-base-content/50 m-0 mb-3">

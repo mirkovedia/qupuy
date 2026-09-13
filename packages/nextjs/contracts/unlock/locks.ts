@@ -1,26 +1,43 @@
-import type { Address } from "viem";
+import { type Address, isAddress } from "viem";
 import { sepolia } from "viem/chains";
 
 /**
- * Dirección placeholder mientras no se despliegan los Locks reales.
- * Se sustituye por variables de entorno en la Tarea 11.
+ * Bloque aproximado en el que se desplegaron los Locks.
+ *
+ * Las búsquedas de eventos parten de aquí: buscar desde el bloque cero hace
+ * que los nodos públicos rechacen la petición.
  */
-const PENDIENTE = "0x0000000000000000000000000000000000000000" as Address;
+export const BLOQUE_DESPLIEGUE = 11690000n;
 
-const leerLock = (variable: string | undefined): Address => (variable as Address | undefined) ?? PENDIENTE;
+/**
+ * Lee la dirección de un Lock desde el entorno.
+ *
+ * Si falta o no es una dirección, el curso queda sin Lock —y la interfaz lo
+ * dice— en lugar de consultar en silencio a la dirección cero.
+ */
+export const leerLock = (variable: string | undefined, nombre: string): Address | undefined => {
+  if (variable && isAddress(variable)) return variable;
+  console.warn(`[qupuy] ${nombre} no está definida o no es una dirección válida; el curso quedará sin Lock`);
+  return undefined;
+};
+
+export type RegistroLocks = Record<number, Record<string, Address | undefined>>;
 
 /**
  * Registro de Locks por red. Añadir una red es añadir una entrada aquí;
  * no requiere tocar componentes ni hooks.
  */
-export const LOCKS_POR_RED: Record<number, Record<string, Address>> = {
+export const LOCKS_POR_RED: RegistroLocks = {
   [sepolia.id]: {
-    "ingles-basico": leerLock(process.env.NEXT_PUBLIC_LOCK_INGLES),
-    "excel-negocios": leerLock(process.env.NEXT_PUBLIC_LOCK_EXCEL),
-    "reparacion-celulares": leerLock(process.env.NEXT_PUBLIC_LOCK_CELULARES),
+    "ingles-basico": leerLock(process.env.NEXT_PUBLIC_LOCK_INGLES, "NEXT_PUBLIC_LOCK_INGLES"),
+    "excel-negocios": leerLock(process.env.NEXT_PUBLIC_LOCK_EXCEL, "NEXT_PUBLIC_LOCK_EXCEL"),
+    "reparacion-celulares": leerLock(process.env.NEXT_PUBLIC_LOCK_CELULARES, "NEXT_PUBLIC_LOCK_CELULARES"),
   },
 };
 
 /** Resuelve la dirección del Lock de un curso en la red indicada. */
-export const resolverLock = (lockKey: string, chainId: number): Address | undefined =>
-  LOCKS_POR_RED[chainId]?.[lockKey];
+export const resolverLock = (
+  lockKey: string,
+  chainId: number,
+  registro: RegistroLocks = LOCKS_POR_RED,
+): Address | undefined => registro[chainId]?.[lockKey];
